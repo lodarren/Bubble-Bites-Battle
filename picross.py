@@ -44,7 +44,7 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Picross")
 
 # Timer settings
-TIMER_DURATION = 120  # Countdown duration in seconds
+TIMER_DURATION = 3  # Countdown duration in seconds
 start_ticks = pygame.time.get_ticks()  # Record the start time
 
 # Example solution grid (1 for filled, 0 for empty)
@@ -339,11 +339,11 @@ def game_end_sequence_normal():
     pygame.time.wait(3000)
     
     if player_scores[0] > player_scores[1]:
-        game_over_text = font.render("Player 1 Wins!", True, BLACK)
-        screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75 , WINDOW_HEIGHT // 2 + 100))
+        player_win_text = font.render("Player 1 Wins!", True, BLACK)
     else: 
-        game_over_text = font.render("Player 2 Wins!", True, BLACK)
-        screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75, WINDOW_HEIGHT // 2 + 100))
+        player_win_text = font.render("Player 2 Wins!", True, BLACK)
+        
+    screen.blit(player_win_text, (WINDOW_WIDTH // 2 - 75, WINDOW_HEIGHT // 2 + 100))
     
     
     pygame.display.update()
@@ -441,16 +441,20 @@ def picross_game():
 
         
         # Check if the timer runs out
-        if remaining_time <= 0 and player_scores[0] != player_scores[1]:
-            if sudden_death_flag: 
-                game_end_sequence_sudden_death()
-            else: 
-                game_end_sequence_normal()
-            pygame.time.wait(3000)  # Wait for 3 seconds before quitting
-            running = False
-        elif remaining_time <= 0 and player_scores[0] == player_scores[1]:
-            sudden_death_sequence()
-            
+        if remaining_time <= 0:
+            print(running)
+            if player_scores[0] != player_scores[1] and running:
+                if sudden_death_flag: 
+                    game_end_sequence_sudden_death()
+                else: 
+                    game_end_sequence_normal()
+                    print("i ran")
+                    pygame.time.wait(3000)  # Wait for 3 seconds before quitting
+                running = False
+                print(running)
+            elif remaining_time <= 0 and player_scores[0] == player_scores[1] and running:
+                sudden_death_sequence()
+        
             
         #screen.blit(font.render(text, True, (0, 0, 0)), (32, 48))
         pygame.display.flip()
@@ -469,7 +473,7 @@ def start_picross(character_1, character_2):
     return #This is the character that wins
     
 
-start_picross(None, None)
+#start_picross(None, None)
 
 
 #pygame.quit()
