@@ -1,3 +1,3 @@
 import picross
 
-picross.runpicross()
+picross.picross_game()

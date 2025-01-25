@@ -14,6 +14,18 @@ GRID2_OFFSET = (1305, 150)  # Top-left corner of the second grid
 GRID_SIZE = 7  # 5x5 grid
 CELL_SIZE = 75
 
+# Meter offsets
+METER1_OFFSET = (0, WINDOW_HEIGHT - 3 * CELL_SIZE)
+METER2_OFFSET = (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 3 * CELL_SIZE)
+
+# Score Offsets
+SCORE1_OFFSET = (0, 0)
+SCORE2_OFFSET = (0, 0)
+
+# Score Offsets
+SCORE1_OFFSET = (WINDOW_WIDTH // 2 - 175, 75)
+SCORE2_OFFSET = (WINDOW_WIDTH // 2 + 150, 75)
+
 # DAS Constants
 DAS_DELAY = 5
 DAS_INTERVAL = 100
@@ -25,13 +37,14 @@ GRAY = (200, 200, 200)
 BLUE = (0, 0, 255)
 ORANGE = (255,127,80)
 YELLOW = (255, 255, 0)
+RED = (255, 0, 0)
 
 # Initialize screen
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Picross")
 
 # Timer settings
-TIMER_DURATION = 2  # Countdown duration in seconds
+TIMER_DURATION = 120  # Countdown duration in seconds
 start_ticks = pygame.time.get_ticks()  # Record the start time
 
 # Example solution grid (1 for filled, 0 for empty)
@@ -71,15 +84,20 @@ player_grids = [
                 [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)], 
                 [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
                 ]
-player_meters = [0, 0]
+player_meters = [0.2, 0.3]
 player_scores = [0, 0]
 player_characters = [player_1_character, player_2_character]
 
 # 0 for player 1, 1 for player 2
 winner = 0
 
+# 0 := false, 1 := true
+sudden_death_flag = False
+
 # Font for displaying row/column clues
 font = pygame.font.SysFont(None, 36)
+score_font = pygame.font.SysFont(None, 100)
+timer_font = pygame.font.SysFont(None, 150)
 
 
 # Bubbles can either be 0 : Not filled, 1 : Filled, 2 : Crossed
@@ -160,6 +178,19 @@ def draw_clues():
             screen.blit(text, (col_idx * CELL_SIZE + GRID2_OFFSET[0] + CELL_SIZE // 2, GRID2_OFFSET[1] - CELL_SIZE * 1.25  + i * CELL_SIZE / len(clue)))
 
 
+def draw_meter(): 
+    pygame.draw.rect(screen, RED, pygame.Rect(METER1_OFFSET[0], METER1_OFFSET[1], WINDOW_WIDTH // 2 * player_meters[0], 3 * CELL_SIZE))
+    pygame.draw.rect(screen, BLUE, pygame.Rect(METER2_OFFSET[0] + (WINDOW_WIDTH // 2 * (1 - player_meters[1])), METER2_OFFSET[1], WINDOW_WIDTH // 2 * player_meters[1], 3 * CELL_SIZE))
+    
+
+
+def draw_score():
+    score_1_text = score_font.render(str(player_scores[0]), True, BLACK)
+    screen.blit(score_1_text, SCORE1_OFFSET)
+    score_2_text = score_font.render(str(player_scores[1]), True, BLACK)
+    screen.blit(score_2_text, SCORE2_OFFSET)
+
+
 def get_clue(line):
     """Get the clue numbers for a row or column."""
     clue = []
@@ -232,7 +263,7 @@ def player_ult(character, player):
 
 # TODO restart the puzzle
 def restart_puzzle(player):
-    global solution_grid_1, player_grid_1, solution_grid_2, player_grid_2, key_states_movement, key_states_placement, last_action_time_movement
+    global solution_grid_1, solution_grid_2
     
     if player == 0:     
         solution_grid_1 = [[random.randint(0, 1) for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
@@ -241,10 +272,6 @@ def restart_puzzle(player):
         solution_grid_2 = [[random.randint(0, 1) for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
         player_grids[1] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
 
-    key_states_movement.clear()
-    key_states_placement.clear()
-    last_action_time_movement.clear()
-    last_action_time_placement.clear()
 # Game loop
 key_states_movement = {} # When a key is pressed
 key_states_placement = {} # When a key is pressed
@@ -271,6 +298,55 @@ PLACEMENT_BUTTONS = {
     pygame.K_KP2 : (1, 2), 
 }
 
+def update_scores(player): 
+    global player_scores, player_meters
+    if player == 0:
+        player_scores[0] += 1
+        player_meters[1] += 0.2
+    elif player == 1: 
+        player_scores[1] += 1
+        player_meters[0] += 0.2
+    
+    if player_meters[0] > 1: 
+        player_meters[0] = 1
+    elif player_meters[1] > 1:
+        player_meters[1] = 1
+        
+
+def sudden_death_sequence(): 
+    global sudden_death_flag 
+    sudden_death_text_1 = font.render(f"SUDDEN DEATH!", True, BLACK)
+    sudden_death_text_2 = font.render(f"FIRST TO FINISH WINS!", True, BLACK)
+    screen.blit(sudden_death_text_1, (WINDOW_WIDTH // 2 - 80 , WINDOW_HEIGHT // 2 - 100))
+    screen.blit(sudden_death_text_2, (WINDOW_WIDTH // 2 - 125 , WINDOW_HEIGHT // 2))
+    sudden_death_flag = True
+
+
+def game_end_sequence_sudden_death():
+    if player_scores[0] > player_scores[1]:
+        game_over_text = font.render("Player 1 Wins!", True, BLACK)
+        screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75 , WINDOW_HEIGHT // 2))
+    else: 
+        game_over_text = font.render("Player 2 Wins!", True, BLACK)
+        screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75, WINDOW_HEIGHT // 2 + 100))
+    
+    pygame.display.update()
+
+def game_end_sequence_normal():
+    game_over_text = font.render("Time's Up!", True, BLACK)
+    screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 50, WINDOW_HEIGHT // 2))
+    pygame.display.update()
+    pygame.time.wait(3000)
+    
+    if player_scores[0] > player_scores[1]:
+        game_over_text = font.render("Player 1 Wins!", True, BLACK)
+        screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75 , WINDOW_HEIGHT // 2 + 100))
+    else: 
+        game_over_text = font.render("Player 2 Wins!", True, BLACK)
+        screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75, WINDOW_HEIGHT // 2 + 100))
+    
+    
+    pygame.display.update()
 
 def picross_game():
     running = True
@@ -284,13 +360,13 @@ def picross_game():
             
             if event.type == pygame.QUIT:
                 running = False
-            # A key is pressed
+
             elif event.type == pygame.KEYDOWN and event.key in MOVEMENT_BUTTONS:
                 if event.key not in key_states_movement:
                     key_states_movement[event.key] = current_time
                     last_action_time_movement[event.key] = 0
                     print(f"Key {pygame.key.name(event.key)} pressed")
-                    update_cursor_position(*MOVEMENT_BUTTONS[event.key])
+                    #update_cursor_position(*MOVEMENT_BUTTONS[event.key])
                     
                     for placement_key in PLACEMENT_BUTTONS:
                         if pressed_keys[placement_key]:
@@ -331,26 +407,26 @@ def picross_game():
                 if time_since_last_action >= DAS_INTERVAL:
                     print(f"Action triggered for key: {pygame.key.name(key)}")
                     update_cursor_position(*MOVEMENT_BUTTONS[key])
-                    last_action_time_movement[key] = current_time # update last action time     
+                    last_action_time_movement[key] = current_time 
 
         # Draw everything
         draw_grid()
+        draw_meter()
         draw_clues()
+        draw_score()
         
 
         # Check win condition
         global player_1_win_flag, player_2_win_flag
         if check_win(player_grids[0], solution_grid_1) and not player_1_win_flag:
-            win_text = font.render("You Win!", True, BLACK)
             player_1_win_flag = True
-            screen.blit(win_text, (WINDOW_WIDTH // 2 - 50, WINDOW_HEIGHT // 2))
+            update_scores(0)
             restart_puzzle(0)
             print(player_grids[0])
             player_1_win_flag = False
         elif check_win(player_grids[1], solution_grid_2) and not player_2_win_flag:
-            win_text = font.render("You Win!", True, BLACK)
             player_2_win_flag = True
-            screen.blit(win_text, (WINDOW_WIDTH // 2 - 50, WINDOW_HEIGHT // 2))
+            update_scores(1)
             restart_puzzle(1)
             player_2_win_flag = False
             
@@ -359,43 +435,28 @@ def picross_game():
         elapsed_time = (pygame.time.get_ticks() - start_ticks) // 1000  # Convert ms to seconds
         remaining_time = max(TIMER_DURATION - elapsed_time, 0)  # Countdown timer
         
-        timer_text = font.render(f"{remaining_time}", True, BLACK)
-        screen.blit(timer_text, (WINDOW_WIDTH//2, 50))  # Display at top-right corner
+        timer_text = timer_font.render(f"{remaining_time}", True, BLACK)
+        text_width, _ = timer_text.get_size()
+        screen.blit(timer_text, ((WINDOW_WIDTH - text_width)//2, 50))  # Display at top-right corner
 
         
         # Check if the timer runs out
         if remaining_time <= 0 and player_scores[0] != player_scores[1]:
-            game_end_sequence()
+            if sudden_death_flag: 
+                game_end_sequence_sudden_death()
+            else: 
+                game_end_sequence_normal()
+            pygame.time.wait(3000)  # Wait for 3 seconds before quitting
             running = False
         elif remaining_time <= 0 and player_scores[0] == player_scores[1]:
             sudden_death_sequence()
+            
             
         #screen.blit(font.render(text, True, (0, 0, 0)), (32, 48))
         pygame.display.flip()
     
     return winner
-def sudden_death_sequence(): 
-    game_over_text = font.render("SUDDEN DEATH! FIRST TO FINISH WINS!", True, BLACK)
-    screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75 , WINDOW_HEIGHT // 2))
 
-    
-
-def game_end_sequence():
-    game_over_text = font.render("Time's Up!", True, BLACK)
-    screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 50, WINDOW_HEIGHT // 2))
-    pygame.display.update()
-    pygame.time.wait(3000)
-    
-    if player_scores[0] > player_scores[1]:
-        game_over_text = font.render("Player 1 Wins!", True, BLACK)
-        screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75 , WINDOW_HEIGHT // 2))
-    else: 
-        game_over_text = font.render("Player 2 Wins!", True, BLACK)
-        screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75, WINDOW_HEIGHT // 2 + 100))
-    
-    
-    pygame.display.update()
-    pygame.time.wait(3000)  # Wait for 3 seconds before quitting
 
 def start_picross(character_1, character_2):
     global player_1_character, player_2_character
@@ -415,9 +476,10 @@ start_picross(None, None)
 #sys.exit()
 
 
-# CLOCK
+# CLOCK DONE
+# Add score
 # Super animation when add/destroy
-# meter scores 
+# meter scores DONE
 # add sprites 
 # add 7x7 picross puzzles
 
