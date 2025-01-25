@@ -158,6 +158,20 @@ def update_square(grid, position, mark):
         
     print(f'Placed {mark} at {position}')
     
+    
+# Similar to update_square, but doesn't replace marked squares    
+def update_square_running(grid, position, mark): 
+    if grid[position[1]][position[0]] == mark: 
+        grid[position[1]][position[0]] = mark
+    elif grid[position[1]][position[0]] == 2 and mark == 1:
+        grid[position[1]][position[0]] == 2
+    elif grid[position[1]][position[0]] == 1 and mark == 2:
+        grid[position[1]][position[0]] == 1
+    else: 
+        grid[position[1]][position[0]] = mark
+        
+    print(f'Placed {mark} at {position}')
+    
 
 
 # Game loop
@@ -210,7 +224,7 @@ while running:
                 update_cursor_position(*MOVEMENT_BUTTONS[event.key])
                 
                 for placement_key in PLACEMENT_BUTTONS:
-                    if placement_key in pressed_keys:
+                    if pressed_keys[placement_key]:
                         update_square(player_grid, player_1_cursor, PLACEMENT_BUTTONS[placement_key][1])
                 
         elif event.type == pygame.KEYUP and event.key in MOVEMENT_BUTTONS:
@@ -221,25 +235,22 @@ while running:
                 print(f"Key {pygame.key.name(event.key)} released")
                 
     
-        elif event.type == pygame.KEYDOWN and event.key in PLACEMENT_BUTTONS:
-            if event.key not in key_states_placement:            
-                key_states_placement[event.key] = (current_time, player_positions[PLACEMENT_BUTTONS[event.key][0]])
-                last_action_time_placement[event.key] = (0, player_positions[PLACEMENT_BUTTONS[event.key][0]])
-                print(f"Key {pygame.key.name(event.key)} pressed")
-                # TODO: FIX THIS
-                update_square(player_grid, player_1_cursor, PLACEMENT_BUTTONS[event.key][1])
-        
-        elif event.type == pygame.KEYUP and event.key in PLACEMENT_BUTTONS:
-            if event.key in key_states_placement:
-                del key_states_placement[event.key]
-                if event.key in last_action_time_placement:
-                    del last_action_time_placement[event.key]
-                print(f"Key {pygame.key.name(event.key)} released")
+        elif event.type == pygame.KEYDOWN and event.key in PLACEMENT_BUTTONS:  
+            key_states_placement[event.key] = (current_time, player_positions[PLACEMENT_BUTTONS[event.key][0]])
+            last_action_time_placement[event.key] = (0, player_positions[PLACEMENT_BUTTONS[event.key][0]])
+            print(f"Key {pygame.key.name(event.key)} pressed")
+            # TODO: FIX THIS
+            update_square(player_grid, player_1_cursor, PLACEMENT_BUTTONS[event.key][1])
+
         
         
     
     for key, press_time in list(key_states_movement.items()):
         elapsed = current_time - press_time
+        pressed_keys = pygame.key.get_pressed()
+        for placement_key in PLACEMENT_BUTTONS:
+            if pressed_keys[placement_key]:
+                update_square_running(player_grid, player_1_cursor, PLACEMENT_BUTTONS[placement_key][1])
         
         if elapsed >= DAS_DELAY:
             time_since_last_action = current_time - last_action_time_movement[key]
@@ -248,22 +259,9 @@ while running:
                 update_cursor_position(*MOVEMENT_BUTTONS[key])
                 last_action_time_movement[key] = current_time # update last action time
                 
-                for placement_key in PLACEMENT_BUTTONS:
-                    if placement_key in pressed_keys:
-                        update_square(player_grid, player_1_cursor, PLACEMENT_BUTTONS[placement_key][1])
+
+                
     
-
-    for key, time_pos in list(key_states_placement.items()):
-        elapsed = current_time - time_pos[0]
-        
-        if elapsed >= DAS_DELAY:
-            time_since_last_action = current_time - last_action_time_placement[key][0]
-            if time_since_last_action >= DAS_INTERVAL and time_pos[1] != last_action_time_placement[key][1]:
-                print(f"Action triggered for key: {pygame.key.name(key)}")
-                update_square(player_grid, player_1_cursor, PLACEMENT_BUTTONS[key][1])
-                last_action_time_placement[key] = (current_time, last_action_time_placement[key][1]) # update last action time
-           
-
         
 
     # Draw everything
