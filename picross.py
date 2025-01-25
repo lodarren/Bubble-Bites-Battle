@@ -2,6 +2,7 @@ import pygame
 import sys
 import endgame
 import random
+import puzzles
 
 # Initialize Pygame
 pygame.init()
@@ -266,12 +267,22 @@ def restart_puzzle(player):
     global solution_grid_1, solution_grid_2
     
     if player == 0:     
+        solution_grid_1 = puzzles.puzzles[random.randint(0, len(puzzles.puzzles) - 1)]
+        player_grids[0] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+    else: 
+        solution_grid_2 = puzzles.puzzles[random.randint(0, len(puzzles.puzzles) - 1)]
+        player_grids[1] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+        
+    '''
+    This is the random puzzle generator
+    
+    if player == 0:     
         solution_grid_1 = [[random.randint(0, 1) for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
         player_grids[0] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
     else: 
         solution_grid_2 = [[random.randint(0, 1) for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
         player_grids[1] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
-
+    '''
 # Game loop
 key_states_movement = {} # When a key is pressed
 key_states_placement = {} # When a key is pressed
@@ -449,12 +460,11 @@ def picross_game():
                 else: 
                     game_end_sequence_normal()
                     print("i ran")
-                    pygame.time.wait(3000)  # Wait for 3 seconds before quitting
+                pygame.time.wait(3000)  # Wait for 3 seconds before quitting
                 running = False
                 print(running)
             elif remaining_time <= 0 and player_scores[0] == player_scores[1] and running:
                 sudden_death_sequence()
-        
             
         #screen.blit(font.render(text, True, (0, 0, 0)), (32, 48))
         pygame.display.flip()
