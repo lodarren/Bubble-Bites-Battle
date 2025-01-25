@@ -1,1 +1,3 @@
-print("this is our game")
+import picross
+
+picross.runpicross()
