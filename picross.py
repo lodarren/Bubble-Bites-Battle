@@ -306,11 +306,11 @@ def update_animations():
             pygame.display.update()
             animation['last_update_time'] = current_time  # Update time
             if animation['despawning']:
-                animation['idx'] -= 1
+                animation['idx'] -= 2
                 if animation['idx'] <= 0:
                     del bubble_animations[(x, y)]  # Remove animation when finished
             else:
-                animation['idx'] += 1
+                animation['idx'] += 2
                 if animation['idx'] >= 8:
                     del bubble_animations[(x, y)]  # Remove animation when finished
 
@@ -322,11 +322,11 @@ def update_animations():
             pygame.display.update()
             animation['last_update_time'] = current_time  # Update time
             if animation['despawning']:
-                animation['idx'] -= 1
+                animation['idx'] -= 2
                 if animation['idx'] <= 0:
                     del pin_animations[(x, y)]  # Remove animation when finished
             else:
-                animation['idx'] += 1
+                animation['idx'] += 2
                 if animation['idx'] >= 12:
                     del pin_animations[(x, y)]  # Remove animation when finished
 
