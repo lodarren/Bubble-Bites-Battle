@@ -59,13 +59,13 @@ solution_grid_1 = [
     [1, 0, 0, 0, 0, 0, 0],
 ]
 solution_grid_2 = [
-    [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 1, 0, 0],
+    [1, 0, 0, 0, 1, 0, 0],
+    [1, 0, 0, 0, 1, 0, 0],
+    [1, 0, 0, 0, 1, 0, 0],
+    [1, 0, 0, 0, 1, 0, 0],
+    [1, 0, 0, 0, 1, 0, 0],
+    [1, 0, 0, 0, 1, 0, 0],
 ]
 
 # Player's current state
@@ -320,12 +320,58 @@ def ult_animation(player_idx, character_sprite):
     # Pause for a moment
     pygame.time.wait(100)
     
+def destroy_grid(player):
+    # TODO PUT EFFECTS
+    player_grids[player] = [[2 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+    
+
+def random_powerup(player): 
+    global player_scores
+    # Define the possible values and their corresponding probabilities
+    values = [-2, -1, 1, 2]
+    probabilities = [0.05, 0.4, 0.4, 0.15]
+
+    # Get a random value based on the probabilities
+    player_scores[player] += random.choices(values, probabilities)[0]
+    
+    
+def reveal_grid(player):
+    revealed_idx = random.randint(0, 4)
+    # effect
+    if player == 0:
+        for r in range(revealed_idx, revealed_idx + 3):
+            for c in range(GRID_SIZE):
+                if solution_grid_1[r][c] == 1:
+                    player_grids[player][r][c] = 1
+                else:
+                    player_grids[player][r][c] = 2
+    else:
+        for r in range(revealed_idx, revealed_idx + 3):
+            for c in range(GRID_SIZE):
+                if solution_grid_2[r][c] == 1:
+                    player_grids[player][r][c] = 1
+                else:
+                    player_grids[player][r][c] = 2
+    
+
+
+def ult_effect(player, effect):
+    if effect == 0:
+        destroy_grid(abs(player - 1))
+    elif effect == 1:
+        print('effect 1')
+    elif effect == 2:
+        random_powerup(player)
+    elif effect == 3:
+        reveal_grid(player)
+    
 # Ultimate attack
 def player_ult(character, player):
     global player_meters
     if player_meters[player] == 1: 
         print(f'PLAYER {player} SUPER')
         ult_animation(player, character['attack_sprite'])
+        ult_effect(player, character['effect'])
         #player_meters[player] = 0
     else: 
         print('failed')

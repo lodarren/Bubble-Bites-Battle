@@ -11,7 +11,7 @@ character_1 = {
     # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
     'effect' : 0,
     # between 1 and 0
-    'multiplier' : 0.75, 
+    'multiplier' : 0.5, 
 
     'win_quote' : 'The was a nice try... Punk.',
     'effect_description' : "Blow up the enemy's board!", 
@@ -19,7 +19,7 @@ character_1 = {
 
     'neutral_sprite' : 'art/0_idle.png',
     'hit_sprite' : 'art/0_hurt.png',
-    'attack_sprite' : 'art/2_attack.png', 
+    'attack_sprite' : 'art/0_attack.png', 
     'bar_sprite' : 'art/border.png',
     'progression_meter_sprite' : 'art/0_uncharged.png', 
     'charged_meter_sprite' : 'art/0_charged.png', 
@@ -31,18 +31,58 @@ character_2 = {
     # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
     'effect' : 1,
     # between 1 and 0
-    'multiplier' : 0.75, 
+    'multiplier' : 1.0, 
 
     'win_quote' : 'The was a nice try... Punk.',
     'effect_description' : "Blow up the enemy's board!", 
     'character_description' : 'The nomadic fiend', 
 
-    'neutral_sprite' : 'art/0_idle.png',
-    'hit_sprite' : 'art/0_hurt.png',
-    'attack_sprite' : "art/2_attack.png", 
+    'neutral_sprite' : 'art/1_idle.png',
+    'hit_sprite' : 'art/1_hurt.png',
+    'attack_sprite' : "art/1_attack.png", 
     'bar_sprite' : 'art/border.png',
-    'progression_meter_sprite' : 'art.0_uncharged.png', 
-    'charged_meter_sprite' : 'art/0_charged.png', 
+    'progression_meter_sprite' : 'art.1_uncharged.png', 
+    'charged_meter_sprite' : 'art/1_charged.png', 
+
+    'colour_hexcodes' : '#fffce3'
+}
+
+character_3 = {
+    # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
+    'effect' : 2,
+    # between 1 and 0
+    'multiplier' : 1.0, 
+
+    'win_quote' : 'The was a nice try... Punk.',
+    'effect_description' : "Blow up the enemy's board!", 
+    'character_description' : 'The nomadic fiend', 
+
+    'neutral_sprite' : 'art/3_idle.png',
+    'hit_sprite' : 'art/3_hurt.png',
+    'attack_sprite' : "art/3_attack.png", 
+    'bar_sprite' : 'art/border.png',
+    'progression_meter_sprite' : 'art.3_uncharged.png', 
+    'charged_meter_sprite' : 'art/3_charged.png', 
+
+    'colour_hexcodes' : '#fffce3'
+}
+
+character_4 = {
+    # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
+    'effect' : 3,
+    # between 1 and 0
+    'multiplier' : 0.5, 
+
+    'win_quote' : 'The was a nice try... Punk.',
+    'effect_description' : "Blow up the enemy's board!", 
+    'character_description' : 'The nomadic fiend', 
+
+    'neutral_sprite' : 'art/4_idle.png',
+    'hit_sprite' : 'art/4_hurt.png',
+    'attack_sprite' : "art/4_attack.png", 
+    'bar_sprite' : 'art/border.png',
+    'progression_meter_sprite' : 'art.4_uncharged.png', 
+    'charged_meter_sprite' : 'art/4_charged.png', 
 
     'colour_hexcodes' : '#fffce3'
 }
@@ -69,6 +109,6 @@ while True:
         characterselect.character_select_screen()
     while GAME_STATE == "PICROSS":
         pygame.mixer.music.play(-1,0,0)
-        picross.start_picross(character_1, character_2)
+        picross.start_picross(character_2, character_2)
     while GAME_STATE == "END_SCREEN":
         pass
