@@ -90,6 +90,14 @@ char_bubble_gum = {
     'colour_rgb' : (239, 227, 255)
 }
 
+
+characters = {
+    '0' : char_bubble_waffle,
+    '1' : char_bubble_chocolate,
+    '2' : char_bubble_tea,
+    '3' : char_bubble_gum
+}
+
 # Screen dimensions
 WINDOW_WIDTH, WINDOW_HEIGHT = 1920, 1080
 
@@ -101,7 +109,7 @@ pygame.display.set_caption("Picross")
 # - "CHARACTER_SELECT"
 # - "PICROSS"
 # - "END_SCREEN"
-GAME_STATE = "END_SCREEN"
+GAME_STATE = "CHARACTER_SELECT"
 
 VOLUME = 1.0
 pygame.mixer.music.set_volume(VOLUME)
@@ -114,10 +122,8 @@ while True:
     elif GAME_STATE == "PICROSS":
         extend0.stop()
         extend0.play(loops=-1) 
-        winner = picross.start_picross(characters_chosen[0], characters_chosen[1])
-        GAME_STATE = "END_SCREEN"
+        winner = picross.start_picross(characters[characters_chosen[0]], characters[characters_chosen[1]])
     elif GAME_STATE == "END_SCREEN":
+        extend0.stop()
         extend0.play()
         endgame.end_screen(winner)
-
-

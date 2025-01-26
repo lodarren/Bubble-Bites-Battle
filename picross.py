@@ -28,7 +28,7 @@ SCORE1_OFFSET = (WINDOW_WIDTH // 2 - 175, 75)
 SCORE2_OFFSET = (WINDOW_WIDTH // 2 + 150, 75)
 
 # DAS Constants
-DAS_DELAY = 5
+DAS_DELAY = 0
 DAS_INTERVAL = 100
 
 # Colors
@@ -109,12 +109,12 @@ def draw_grid():
             x, y = GRID1_OFFSET[0] + col * CELL_SIZE, GRID1_OFFSET[1] + row * CELL_SIZE
 
             if player_grids[0][row][col] == 0:
-                color = WHITE
+                pygame.draw.rect(screen, WHITE, (x, y, CELL_SIZE, CELL_SIZE))
             elif player_grids[0][row][col] == 1:
-                color = BLACK
+                screen.blit(pygame.image.load('art/b8.png'), (x, y))
             else:
-                color = ORANGE
-            pygame.draw.rect(screen, color, (x, y, CELL_SIZE, CELL_SIZE))
+                screen.blit(pygame.image.load('art/p12.png'), (x, y))
+            
 
             # Draw grid lines
             pygame.draw.rect(screen, BLACK, (x, y, CELL_SIZE, CELL_SIZE), 2)
@@ -124,12 +124,11 @@ def draw_grid():
                 x, y = GRID2_OFFSET[0] + col * CELL_SIZE, GRID2_OFFSET[1] + row * CELL_SIZE
 
                 if player_grids[1][row][col] == 0:
-                    color = WHITE
+                    pygame.draw.rect(screen, WHITE, (x, y, CELL_SIZE, CELL_SIZE))
                 elif player_grids[1][row][col] == 1:
-                    color = BLACK
+                    screen.blit(pygame.image.load('art/b8.png'), (x, y))
                 else:
-                    color = ORANGE
-                pygame.draw.rect(screen, color, (x, y, CELL_SIZE, CELL_SIZE))
+                    screen.blit(pygame.image.load('art/p12.png'), (x, y))
 
                 # Draw grid lines
                 pygame.draw.rect(screen, BLACK, (x, y, CELL_SIZE, CELL_SIZE), 2)
@@ -180,9 +179,49 @@ def draw_clues():
 
 
 def draw_meter(): 
+    # Load the progression meter sprites
+    
+    # THis is too hard to code, i need just the rectangle
+    bar_meter_1 = pygame.image.load(player_1_character['progression_meter_sprite'])
+    bar_meter_2 = pygame.image.load(player_2_character['progression_meter_sprite'])
+
+    # Player 1 progression meter scaling and display
+    if player_meters[0] < 1:
+        # Scale the bar based on the player's progression meter
+        scaled_bar_1 = pygame.transform.scale(bar_meter_1, (player_meters[0] * WINDOW_WIDTH // 2, 3 * CELL_SIZE))
+        screen.blit(scaled_bar_1, (METER1_OFFSET[0], METER1_OFFSET[1]))
+    else:
+        # Player 1 has full meter, use the charged sprite
+        screen.blit(pygame.image.load(player_1_character['charged_meter_sprite']), (METER1_OFFSET[0], METER1_OFFSET[1]))
+    
+    # Player 2 progression meter scaling and display
+    if player_meters[1] < 1:
+        # Scale the bar based on the player's progression meter
+        scaled_bar_2 = pygame.transform.scale(bar_meter_2, (player_meters[1] * WINDOW_WIDTH // 2, 3 * CELL_SIZE))
+        screen.blit(scaled_bar_2, (METER2_OFFSET[0] + (WINDOW_WIDTH // 2 * (1 - player_meters[1])), METER2_OFFSET[1]))
+    else:
+        # Player 2 has full meter, use the charged sprite
+        screen.blit(pygame.image.load(player_2_character['charged_meter_sprite']), (METER2_OFFSET[0], METER2_OFFSET[1]))
+
+    character_1_img = pygame.image.load(player_1_character['neutral_sprite'])
+    character_2_img = pygame.image.load(player_2_character['neutral_sprite'])
+
+    character_2_img = pygame.transform.flip(character_2_img, True, False)
+
+    character_1_img = pygame.transform.scale(character_1_img, (192 * 2, 108 * 2))
+    character_2_img = pygame.transform.scale(character_2_img, (192 * 2, 108 * 2))
+        
+    # Draw bars for both players (background bars)
+    screen.blit(pygame.transform.scale(pygame.image.load(player_1_character['bar_sprite']), (WINDOW_WIDTH // 2, 3 * CELL_SIZE)), (METER1_OFFSET[0], METER1_OFFSET[1]))
+    screen.blit(pygame.transform.flip(pygame.transform.scale(pygame.image.load(player_2_character['bar_sprite']), (WINDOW_WIDTH // 2, 3 * CELL_SIZE)), True, False), (METER2_OFFSET[0], METER2_OFFSET[1]))
+    
+    screen.blit(character_1_img, (- CELL_SIZE, METER1_OFFSET[1]))
+    screen.blit(character_2_img, (WINDOW_WIDTH - 4 *  CELL_SIZE, METER2_OFFSET[1]))
+    
+    '''
     pygame.draw.rect(screen, RED, pygame.Rect(METER1_OFFSET[0], METER1_OFFSET[1], WINDOW_WIDTH // 2 * player_meters[0], 3 * CELL_SIZE))
     pygame.draw.rect(screen, BLUE, pygame.Rect(METER2_OFFSET[0] + (WINDOW_WIDTH // 2 * (1 - player_meters[1])), METER2_OFFSET[1], WINDOW_WIDTH // 2 * player_meters[1], 3 * CELL_SIZE))
-    
+    '''
 
 
 def draw_score():
@@ -228,18 +267,106 @@ def update_cursor_position(axis, value, player):
     elif player_positions[player][axis] < 0:
         player_positions[player][axis] = GRID_SIZE - 1
 
-    print(player_positions[player])
+    #print(player_positions[player])
         
+bubble_animations = {}  # Stores ongoing bubble animations by (x, y)
+pin_animations = {}  # Stores ongoing pin animations by (x, y)
+
+# Modify spawn_bubble and despawn_bubble to properly handle 'despawning' key
+
+def spawn_bubble(x, y):
+    # Starting position and frame tracking
+    x, y = GRID1_OFFSET[0] + x * CELL_SIZE, GRID1_OFFSET[1] + y * CELL_SIZE
+    bubble_animations[(x, y)] = {'idx': 1, 'last_update_time': pygame.time.get_ticks(), 'despawning': False}
+
+def despawn_bubble(x, y):
+    # Starting position and frame tracking for despawning
+    x, y = GRID1_OFFSET[0] + x * CELL_SIZE, GRID1_OFFSET[1] + y * CELL_SIZE
+    bubble_animations[(x, y)] = {'idx': 8, 'last_update_time': pygame.time.get_ticks(), 'despawning': True}
+
+# Modify spawn_pin and despawn_pin similarly
+
+def spawn_pin(x, y):
+    # Starting position and frame tracking
+    x, y = GRID1_OFFSET[0] + x * CELL_SIZE, GRID1_OFFSET[1] + y * CELL_SIZE
+    pin_animations[(x, y)] = {'idx': 1, 'last_update_time': pygame.time.get_ticks(), 'despawning': False}
+
+def despawn_pin(x, y):
+    # Starting position and frame tracking for despawning
+    x, y = GRID1_OFFSET[0] + x * CELL_SIZE, GRID1_OFFSET[1] + y * CELL_SIZE
+    pin_animations[(x, y)] = {'idx': 1, 'last_update_time': pygame.time.get_ticks(), 'despawning': True}
+
+
+def update_animations():
+    # Update bubble animations
+    for (x, y), animation in list(bubble_animations.items()):
+        current_time = pygame.time.get_ticks()
+        if current_time - animation['last_update_time'] >= 100:  # Update every 100ms
+            screen.blit(pygame.image.load(f'art/b{int(animation["idx"])}.png'), (x, y))
+            pygame.display.update()
+            animation['last_update_time'] = current_time  # Update time
+            if animation['despawning']:
+                animation['idx'] -= 2
+                if animation['idx'] <= 0:
+                    del bubble_animations[(x, y)]  # Remove animation when finished
+            else:
+                animation['idx'] += 2
+                if animation['idx'] >= 8:
+                    del bubble_animations[(x, y)]  # Remove animation when finished
+
+    # Update pin animations
+    for (x, y), animation in list(pin_animations.items()):
+        current_time = pygame.time.get_ticks()
+        if current_time - animation['last_update_time'] >= 100:  # Update every 100ms
+            screen.blit(pygame.image.load(f'art/p{int(animation["idx"])}.png'), (x, y))
+            pygame.display.update()
+            animation['last_update_time'] = current_time  # Update time
+            if animation['despawning']:
+                animation['idx'] -= 2
+                if animation['idx'] <= 0:
+                    del pin_animations[(x, y)]  # Remove animation when finished
+            else:
+                animation['idx'] += 2
+                if animation['idx'] >= 12:
+                    del pin_animations[(x, y)]  # Remove animation when finished
+
 
 # Updates grid[r][c] with the specified mark        
-def update_square(grid, position, mark): 
-    if grid[position[1]][position[0]] == mark: 
-        grid[position[1]][position[0]] = 0
-    else: 
-        grid[position[1]][position[0]] = mark
-        
-    print(f'Placed {mark} at {position}')
+def update_square(grid, position, mark):
+    x, y = GRID1_OFFSET[0] + position[0] * CELL_SIZE, GRID1_OFFSET[1] + position[1] * CELL_SIZE
     
+    if grid[position[1]][position[0]] == 0 and mark == 1:
+        # bubble spawn
+        spawn_bubble(position[0], position[1])
+        grid[position[1]][position[0]] = 1
+        
+    elif grid[position[1]][position[0]] == 0 and mark == 2:
+        # pin spawn
+        spawn_pin(position[0], position[1])
+        grid[position[1]][position[0]] = 2
+        
+    elif grid[position[1]][position[0]] == 1 and mark == 1:
+        # bubble despawn
+        despawn_bubble(position[0], position[1])
+        grid[position[1]][position[0]] = 0
+        
+    elif grid[position[1]][position[0]] == 1 and mark == 2:
+        # pin spawn
+        spawn_pin(position[0], position[1])
+        grid[position[1]][position[0]] = 2
+        
+    elif grid[position[1]][position[0]] == 2 and mark == 1:
+        # bubble spawn
+        spawn_bubble(position[0], position[1])
+        grid[position[1]][position[0]] = 1
+        
+    elif grid[position[1]][position[0]] == 2 and mark == 2:
+        # pin despawn 
+        despawn_pin(position[0], position[1])
+        grid[position[1]][position[0]] = 0
+        
+    #print(f'Placed {mark} at {position}')
+
     
 # Similar to update_square, but doesn't replace marked squares    
 def update_square_running(grid, position, mark): 
@@ -252,7 +379,7 @@ def update_square_running(grid, position, mark):
     else: 
         grid[position[1]][position[0]] = mark
         
-    print(f'Placed {mark} at {position}')
+    #print(f'Placed {mark} at {position}')
 
 # Ultimate animation
 def ult_animation(player_idx, character_sprite):
@@ -278,7 +405,7 @@ def ult_animation(player_idx, character_sprite):
             fade_surface.set_alpha(fade_opacity)
             screen.blit(fade_surface, (0, 0))
             fade_opacity += fade_speed
-            pygame.display.flip()
+            #pygame.display.flip()
 
         # Move character onto the screen
         while character_rect.left < -480:
@@ -297,13 +424,13 @@ def ult_animation(player_idx, character_sprite):
         fade_surface = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         fade_surface.fill(BLACK)
         fade_opacity = 0
-        fade_speed = 10  # Higher value fades faster
+        fade_speed = 5  # Higher value fades faster
         character_speed = -30
 
         # TODO: Sound effect here
         
         # Fade to black
-        while fade_opacity < 255:
+        while fade_opacity < 50:
             screen.fill(WHITE)
             fade_surface.set_alpha(fade_opacity)
             screen.blit(fade_surface, (0, 0))
@@ -313,6 +440,7 @@ def ult_animation(player_idx, character_sprite):
         # Move character onto the screen
         while character_rect.left > WINDOW_WIDTH // 2 - 480:
             screen.fill(BLACK)
+            fade_surface.set_alpha(50)
             screen.blit(character_image, character_rect)
             character_rect.x += character_speed
             pygame.display.flip()
@@ -354,12 +482,22 @@ def reveal_grid(player):
                     player_grids[player][r][c] = 2
     
 
-
+def swap_puzzles():
+    # play swap sound effect
+    global solution_grid_1, solution_grid_2
+    temp = solution_grid_1
+    solution_grid_1 = solution_grid_2
+    solution_grid_2 = temp
+    
+    temp = player_grids[0]
+    player_grids[0] = player_grids[1]
+    player_grids[1] = temp
+    
 def ult_effect(player, effect):
     if effect == 0:
         destroy_grid(abs(player - 1))
     elif effect == 1:
-        print('effect 1')
+        swap_puzzles()
     elif effect == 2:
         random_powerup(player)
     elif effect == 3:
@@ -369,7 +507,7 @@ def ult_effect(player, effect):
 def player_ult(character, player):
     global player_meters
     if player_meters[player] == 1: 
-        print(f'PLAYER {player} SUPER')
+        #print(f'PLAYER {player} SUPER')
         ult_animation(player, character['attack_sprite'])
         ult_effect(player, character['effect'])
         #player_meters[player] = 0
@@ -478,6 +616,13 @@ def picross_game():
     while running:
         screen.blit(pygame.image.load("art/bg_light.png"), (0, 0))
         current_time = pygame.time.get_ticks()
+        
+        # Draw everything
+        draw_grid()
+        draw_meter()
+        draw_clues()
+        draw_score()
+        update_animations()
 
         # Event handling
         for event in pygame.event.get(): 
@@ -490,7 +635,7 @@ def picross_game():
                 if event.key not in key_states_movement:
                     key_states_movement[event.key] = current_time
                     last_action_time_movement[event.key] = 0
-                    print(f"Key {pygame.key.name(event.key)} pressed")
+                    #print(f"Key {pygame.key.name(event.key)} pressed")
                     #update_cursor_position(*MOVEMENT_BUTTONS[event.key])
                     
                     for placement_key in PLACEMENT_BUTTONS:
@@ -502,15 +647,15 @@ def picross_game():
                     del key_states_movement[event.key]
                     if event.key in last_action_time_movement:
                         del last_action_time_movement[event.key]
-                    print(f"Key {pygame.key.name(event.key)} released")
+                    #print(f"Key {pygame.key.name(event.key)} released")
                     
         
             elif event.type == pygame.KEYDOWN and event.key in PLACEMENT_BUTTONS:  
                 key_states_placement[event.key] = (current_time, player_positions[PLACEMENT_BUTTONS[event.key][0]])
                 last_action_time_placement[event.key] = (0, player_positions[PLACEMENT_BUTTONS[event.key][0]])
-                print(f"Key {pygame.key.name(event.key)} pressed")
+                #print(f"Key {pygame.key.name(event.key)} pressed")
                 update_square(player_grids[PLACEMENT_BUTTONS[event.key][0]], player_positions[PLACEMENT_BUTTONS[event.key][0]], PLACEMENT_BUTTONS[event.key][1])
-                print(player_grids[PLACEMENT_BUTTONS[event.key][0]])
+                #print(player_grids[PLACEMENT_BUTTONS[event.key][0]])
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_j:
@@ -530,15 +675,9 @@ def picross_game():
             if elapsed >= DAS_DELAY:
                 time_since_last_action = current_time - last_action_time_movement[key]
                 if time_since_last_action >= DAS_INTERVAL:
-                    print(f"Action triggered for key: {pygame.key.name(key)}")
+                    #print(f"Action triggered for key: {pygame.key.name(key)}")
                     update_cursor_position(*MOVEMENT_BUTTONS[key])
                     last_action_time_movement[key] = current_time 
-
-        # Draw everything
-        draw_grid()
-        draw_meter()
-        draw_clues()
-        draw_score()
         
 
         # Check win condition
@@ -547,7 +686,7 @@ def picross_game():
             player_1_win_flag = True
             update_scores(0)
             restart_puzzle(0)
-            print(player_grids[0])
+            #print(player_grids[0])
             player_1_win_flag = False
         elif check_win(player_grids[1], solution_grid_2) and not player_2_win_flag:
             player_2_win_flag = True
@@ -572,7 +711,6 @@ def picross_game():
                     game_end_sequence_sudden_death()
                 else: 
                     game_end_sequence_normal()
-                    print("i ran")
                 pygame.time.wait(3000)  # Wait for 3 seconds before quitting
                 running = False
             elif remaining_time <= 0 and player_scores[0] == player_scores[1] and running:
@@ -609,7 +747,6 @@ def start_picross(character_1, character_2):
 # add 7x7 picross puzzles DONE
 
 
-# TODO Build the UI
 # TODO Get the supers/ADD/Destroy
 # TODO Get the game to for loop to get multiple games
 # TODO TIMER
