@@ -22,20 +22,20 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 clock = pygame.time.Clock()
 
 # Init Images
-bg = pygame.image.load('art/bg_character_select.png')
+bg = pygame.image.load('source/art/bg_character_select.png')
 
 # Font
 text_font = pygame.font.SysFont(None, 50)
 
-image_paths = ["art/0_idle.png", "art/1_idle.png", "art/2_idle.png", "art/3_idle.png"]
+image_paths = ["source/art/0_idle.png", "source/art/1_idle.png", "source/art/2_idle.png", "source/art/3_idle.png"]
 images_raw = [pygame.image.load(path) for path in image_paths]
 
-pop = pygame.mixer.Sound('music/pop.mp3')
+pop = pygame.mixer.Sound('source/music/pop.mp3')
 pop.set_volume(1.0)
-c_jump = pygame.mixer.Sound('music/c_jump.wav')
-c_downer = pygame.mixer.Sound('music/c_downer.wav')
-surprise = pygame.mixer.Sound('music/surprise.ogg')
-quick_surprise = pygame.mixer.Sound('music/quick_surprise.ogg')
+c_jump = pygame.mixer.Sound('source/music/c_jump.wav')
+c_downer = pygame.mixer.Sound('source/music/c_downer.wav')
+surprise = pygame.mixer.Sound('source/music/surprise.ogg')
+quick_surprise = pygame.mixer.Sound('source/music/quick_surprise.ogg')
 
 # Corresponds to player 1, player 2
 player_select_flags = [False, False]
@@ -76,7 +76,7 @@ player_cursors = [0, 3]
 zoom_factor = 1
 zooming = False
 zoom_start_time = 0
-zoom_duration = 3
+zoom_duration = 1.5
 
 # Test Image
 def draw_bg():
@@ -200,7 +200,7 @@ def character_select_screen():
                 else:
                     surprise.play()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                if player_select_flags[0] and player_select_flags[1]:
+                if player_select_flags[0] and player_select_flags[1] and zooming == False:
                     c_jump.play()
                     # Start zoom effect when Enter is pressed
                     zooming = True
@@ -212,7 +212,7 @@ def character_select_screen():
             if elapsed_time < zoom_duration:
                 zoom_factor = 1 + (elapsed_time / zoom_duration)  # Gradually zoom in
             else:
-                zoom_factor = 2  # Max zoom after 3 seconds
+                zoom_factor = 2  # Max zoom after 1.5 seconds
                 zooming = False  # Stop zooming after the effect is finished
                 running = False
                 print('DONE')

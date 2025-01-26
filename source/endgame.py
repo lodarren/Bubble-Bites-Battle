@@ -12,12 +12,12 @@ char_bubble_waffle = {
     'effect_description' : "Blow up the enemy's board!", 
     'character_description' : 'The nomadic fiend', 
 
-    'neutral_sprite' : 'art/0_idle.png',
-    'hit_sprite' : 'art/0_hurt.png',
-    'attack_sprite' : 'art/0_attack.png', 
-    'bar_sprite' : 'art/0_border.png',
-    'progression_meter_sprite' : 'art/0_uncharged.png', 
-    'charged_meter_sprite' : 'art/0_charged.png', 
+    'neutral_sprite' : 'source/art/0_idle.png',
+    'hit_sprite' : 'source/art/0_hurt.png',
+    'attack_sprite' : 'source/art/0_attack.png', 
+    'bar_sprite' : 'source/art/0_border.png',
+    'progression_meter_sprite' : 'source/art/0_uncharged.png', 
+    'charged_meter_sprite' : 'source/art/0_charged.png', 
 
     'colour_rgb' : (255, 252, 227)
 }
@@ -32,12 +32,12 @@ char_bubble_chocolate = {
     'effect_description' : "Blow up the enemy's board!", 
     'character_description' : 'The nomadic fiend', 
 
-    'neutral_sprite' : 'art/1_idle.png',
-    'hit_sprite' : 'art/1_hurt.png',
-    'attack_sprite' : "art/1_attack.png", 
-    'bar_sprite' : 'art/1_border.png',
-    'progression_meter_sprite' : 'art/1_uncharged.png', 
-    'charged_meter_sprite' : 'art/1_charged.png', 
+    'neutral_sprite' : 'source/art/1_idle.png',
+    'hit_sprite' : 'source/art/1_hurt.png',
+    'attack_sprite' : "source/art/1_attack.png", 
+    'bar_sprite' : 'source/art/1_border.png',
+    'progression_meter_sprite' : 'source/art/1_uncharged.png', 
+    'charged_meter_sprite' : 'source/art/1_charged.png', 
 
     'colour_rgb' : (255, 227, 227)
 }
@@ -52,12 +52,12 @@ char_bubble_tea = {
     'effect_description' : "Blow up the enemy's board!", 
     'character_description' : 'The nomadic fiend', 
 
-    'neutral_sprite' : 'art/2_idle.png',
-    'hit_sprite' : 'art/2_hurt.png',
-    'attack_sprite' : "art/2_attack.png", 
-    'bar_sprite' : 'art/2_border.png',
-    'progression_meter_sprite' : 'art/2_uncharged.png', 
-    'charged_meter_sprite' : 'art/2_charged.png', 
+    'neutral_sprite' : 'source/art/2_idle.png',
+    'hit_sprite' : 'source/art/2_hurt.png',
+    'attack_sprite' : "source/art/2_attack.png", 
+    'bar_sprite' : 'source/art/2_border.png',
+    'progression_meter_sprite' : 'source/art/2_uncharged.png', 
+    'charged_meter_sprite' : 'source/art/2_charged.png', 
 
     'colour_rgb' : (228, 255, 227)
 }
@@ -72,12 +72,12 @@ char_bubble_gum = {
     'effect_description' : "Blow up the enemy's board!", 
     'character_description' : 'The nomadic fiend', 
 
-    'neutral_sprite' : 'art/3_idle.png',
-    'hit_sprite' : 'art/3_hurt.png',
-    'attack_sprite' : "art/3_attack.png", 
-    'bar_sprite' : 'art/3_border.png',
-    'progression_meter_sprite' : 'art/3_uncharged.png', 
-    'charged_meter_sprite' : 'art/3_charged.png', 
+    'neutral_sprite' : 'source/art/3_idle.png',
+    'hit_sprite' : 'source/art/3_hurt.png',
+    'attack_sprite' : "source/art/3_attack.png", 
+    'bar_sprite' : 'source/art/3_border.png',
+    'progression_meter_sprite' : 'source/art/3_uncharged.png', 
+    'charged_meter_sprite' : 'source/art/3_charged.png', 
 
     'colour_rgb' : (239, 227, 255)
 }
@@ -100,6 +100,8 @@ text_font = pygame.font.SysFont(None, 100)
 # Initialize screen
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
+bg = pygame.image.load('source/art/bg_dark.png')
+
 
 # Winner is a character
 def end_screen(winner):
@@ -110,7 +112,7 @@ def end_screen(winner):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 current= False
-        screen.fill(BLACK)
+        screen.blit(bg, (0,0))
 
         if winner["neutral_sprite"]:
             sprite = pygame.image.load(winner["neutral_sprite"])

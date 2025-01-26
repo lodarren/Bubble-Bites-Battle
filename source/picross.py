@@ -7,6 +7,15 @@ import puzzles
 # Initialize Pygame
 pygame.init()
 
+# Music & SFX
+pop = pygame.mixer.Sound('source/music/pop.mp3')
+pin = pygame.mixer.Sound('source/music/pin.mp3')
+soap = pygame.mixer.Sound('source/music/bubl.wav')
+clang = pygame.mixer.Sound('source/music/clang.wav')
+debuff = pygame.mixer.Sound('source/music/debuff.wav')
+crit = pygame.mixer.Sound('source/music/crit.wav')
+charge = pygame.mixer.Sound('source/music/charge.wav')
+bomb = pygame.mixer.Sound('source/music/bomb.wav')
 
 # Screen dimensions
 WINDOW_WIDTH, WINDOW_HEIGHT = 1920, 1080
@@ -111,9 +120,9 @@ def draw_grid():
             if player_grids[0][row][col] == 0:
                 pygame.draw.rect(screen, WHITE, (x, y, CELL_SIZE, CELL_SIZE))
             elif player_grids[0][row][col] == 1:
-                screen.blit(pygame.image.load('art/b8.png'), (x, y))
+                screen.blit(pygame.image.load('source/art/b8.png'), (x, y))
             else:
-                screen.blit(pygame.image.load('art/p12.png'), (x, y))
+                screen.blit(pygame.image.load('source/art/p12.png'), (x, y))
             
 
             # Draw grid lines
@@ -126,9 +135,9 @@ def draw_grid():
                 if player_grids[1][row][col] == 0:
                     pygame.draw.rect(screen, WHITE, (x, y, CELL_SIZE, CELL_SIZE))
                 elif player_grids[1][row][col] == 1:
-                    screen.blit(pygame.image.load('art/b8.png'), (x, y))
+                    screen.blit(pygame.image.load('source/art/b8.png'), (x, y))
                 else:
-                    screen.blit(pygame.image.load('art/p12.png'), (x, y))
+                    screen.blit(pygame.image.load('source/art/p12.png'), (x, y))
 
                 # Draw grid lines
                 pygame.draw.rect(screen, BLACK, (x, y, CELL_SIZE, CELL_SIZE), 2)
@@ -328,7 +337,7 @@ def update_animations():
     for (x, y), animation in list(bubble_animations.items()):
         current_time = pygame.time.get_ticks()
         if current_time - animation['last_update_time'] >= 100:  # Update every 100ms
-            screen.blit(pygame.image.load(f'art/b{int(animation["idx"])}.png'), (x, y))
+            screen.blit(pygame.image.load(f'source/art/b{int(animation["idx"])}.png'), (x, y))
             pygame.display.update()
             animation['last_update_time'] = current_time  # Update time
             if animation['despawning']:
@@ -344,7 +353,7 @@ def update_animations():
     for (x, y), animation in list(pin_animations.items()):
         current_time = pygame.time.get_ticks()
         if current_time - animation['last_update_time'] >= 100:  # Update every 100ms
-            screen.blit(pygame.image.load(f'art/p{int(animation["idx"])}.png'), (x, y))
+            screen.blit(pygame.image.load(f'source/art/p{int(animation["idx"])}.png'), (x, y))
             pygame.display.update()
             animation['last_update_time'] = current_time  # Update time
             if animation['despawning']:
@@ -360,7 +369,7 @@ def update_animations():
     for (x, y), animation in list(pin_animations.items()):
         current_time = pygame.time.get_ticks()
         if current_time - animation['last_update_time'] >= 100:  # Update every 100ms
-            screen.blit(pygame.image.load(f'art/s{int(animation["idx"])}.png'), (x, y))
+            screen.blit(pygame.image.load(f'source/art/s{int(animation["idx"])}.png'), (x, y))
             pygame.display.update()
             animation['last_update_time'] = current_time  # Update time
             animation['idx'] += 2
@@ -519,11 +528,13 @@ def ult_animation(player_idx, character_sprite):
     
 def destroy_grid(player):
     # TODO PUT EFFECTS
+    bomb.play()
     player_grids[player] = [[2 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
     
 
 def random_powerup(player): 
     global player_scores
+    charge.play()
     # Define the possible values and their corresponding probabilities
     values = [-2, -1, 1, 2]
     probabilities = [0.05, 0.4, 0.4, 0.15]
@@ -696,7 +707,7 @@ def flash_screen(player_idx):
 def picross_game():
     running = True
     while running:
-        screen.blit(pygame.image.load("art/bg_light.png"), (0, 0))
+        screen.blit(pygame.image.load("source/art/bg_light.png"), (0, 0))
         current_time = pygame.time.get_ticks()
         
         # Draw everything
