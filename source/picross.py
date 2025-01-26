@@ -597,7 +597,8 @@ def player_ult(character, player):
         ult_effect(player, character['effect'])
         #player_meters[player] = 0
     else: 
-        print('failed')
+        #print('failed')
+        pass
 
 # TODO restart the puzzle
 def restart_puzzle(player):
@@ -632,18 +633,18 @@ MOVEMENT_BUTTONS = {
     pygame.K_s : (1, 1, 0), 
     pygame.K_a : (0, -1, 0),
     pygame.K_d : (0, 1, 0),  
-    pygame.K_UP : (1, -1, 1), 
-    pygame.K_DOWN : (1, 1, 1), 
-    pygame.K_LEFT : (0, -1, 1),
-    pygame.K_RIGHT : (0, 1, 1), 
+    pygame.K_i : (1, -1, 1), 
+    pygame.K_k : (1, 1, 1), 
+    pygame.K_j : (0, -1, 1),
+    pygame.K_l : (0, 1, 1), 
 }
 
 # grid, mark
 PLACEMENT_BUTTONS = {
-    pygame.K_g : (0, 1), 
-    pygame.K_h : (0, 2), 
-    pygame.K_KP1 : (1, 1), 
-    pygame.K_KP2 : (1, 2), 
+    pygame.K_f : (0, 1), 
+    pygame.K_g : (0, 2), 
+    pygame.K_SEMICOLON : (1, 1), 
+    pygame.K_QUOTE : (1, 2), 
 }
 
 def update_scores(player): 
@@ -762,9 +763,9 @@ def picross_game():
                 #print(player_grids[PLACEMENT_BUTTONS[event.key][0]])
 
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_j:
+                if event.key == pygame.K_h:
                     player_ult(player_1_character, 0)
-                elif event.key == pygame.K_KP3:
+                elif event.key == pygame.K_RETURN:
                     player_ult(player_2_character, 1)
                 
             
