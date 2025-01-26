@@ -2,6 +2,7 @@ import pygame
 
 pygame.init()
 
+
 char_bubble_waffle = {
     # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
     'effect' : 0,
@@ -99,7 +100,7 @@ text_font = pygame.font.SysFont(None, 100)
 
 # Initialize screen
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-
+start_time = pygame.time.get_ticks()
 bg = pygame.image.load('source/art/bg_dark.png')
 win = pygame.mixer.Sound('source/music/win.mp3')
 
@@ -123,7 +124,9 @@ def end_screen(winner):
         text_rect = text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
         text_rect.right = WINDOW_WIDTH
         screen.blit(text, text_rect)
+        if pygame.time.get_ticks() - start_time > 5000:
+            current = False
         pygame.display.update()
-
+    pygame.QUIT()
 
         

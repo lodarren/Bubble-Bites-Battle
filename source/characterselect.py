@@ -216,7 +216,7 @@ def character_select_screen():
                 zooming = False  # Stop zooming after the effect is finished
                 running = False
                 print('DONE')
-                return player_select_flags
+                return player_select_flags, pygame.time.get_ticks()
 
         if zooming:
             draw_bg()

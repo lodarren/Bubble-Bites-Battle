@@ -124,7 +124,7 @@ while True:
     elif GAME_STATE == "PICROSS":
         extend0.stop()
         picross0.play(loops=-1) 
-        winner = picross.start_picross(characters[characters_chosen[0]], characters[characters_chosen[1]])
+        winner = picross.start_picross(characters[characters_chosen[0][0]], characters[characters_chosen[0][1]], characters_chosen[1])
         GAME_STATE = "END_SCREEN"
     elif GAME_STATE == "END_SCREEN":
         picross0.stop()

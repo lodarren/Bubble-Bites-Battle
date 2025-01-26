@@ -60,7 +60,7 @@ pygame.display.set_caption("Picross")
 
 # Timer settings
 TIMER_DURATION = 25 #80  # Countdown duration in seconds
-start_ticks = pygame.time.get_ticks() + 2000  # Record the start time
+start_ticks = pygame.time.get_ticks()  # Record the start time
 
 # Example solution grid (1 for filled, 0 for empty)
 solution_grid_1 = [
@@ -827,9 +827,10 @@ def picross_game():
     return 
 
 
-def start_picross(character_1, character_2):
-    global player_1_character, player_2_character
+def start_picross(character_1, character_2, time):
+    global player_1_character, player_2_character, start_ticks
     
+    start_ticks = time
     player_1_character = character_1
     player_2_character = character_2
 
