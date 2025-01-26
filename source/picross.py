@@ -16,6 +16,11 @@ debuff = pygame.mixer.Sound('source/music/debuff.wav')
 crit = pygame.mixer.Sound('source/music/crit.wav')
 charge = pygame.mixer.Sound('source/music/charge.wav')
 bomb = pygame.mixer.Sound('source/music/bomb.wav')
+dip = pygame.mixer.Sound('source/music/dip.mp3')
+gone = pygame.mixer.Sound('source/music/gone.mp3')
+gone.set_volume(0.3)
+
+played_sudden = False
 
 # Screen dimensions
 WINDOW_WIDTH, WINDOW_HEIGHT = 1920, 1080
@@ -385,31 +390,37 @@ def update_square(grid_idx, position, mark):
     
     if grid[position[1]][position[0]] == 0 and mark == 1:
         # bubble spawn
+        dip.play()
         spawn_bubble(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 1
         
     elif grid[position[1]][position[0]] == 0 and mark == 2:
         # pin spawn
+        pin.play()
         spawn_pin(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 2
         
     elif grid[position[1]][position[0]] == 1 and mark == 1:
         # bubble despawn
+        pop.play()
         despawn_bubble(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 0
         
     elif grid[position[1]][position[0]] == 1 and mark == 2:
         # pin spawn
+        pin.play()
         spawn_pin(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 2
         
     elif grid[position[1]][position[0]] == 2 and mark == 1:
         # bubble spawn
+        dip.play()
         spawn_bubble(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 1
         
     elif grid[position[1]][position[0]] == 2 and mark == 2:
         # pin despawn 
+        gone.play()
         despawn_pin(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 0
         
@@ -422,11 +433,13 @@ def update_square_running(grid_idx, position, mark):
     
     if grid[position[1]][position[0]] == 0 and mark == 1:
         # bubble spawn
+        dip.play()
         spawn_bubble(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 1
         
     elif grid[position[1]][position[0]] == 0 and mark == 2:
         # pin spawn
+        pin.play()
         spawn_pin(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 2
         
@@ -441,6 +454,7 @@ def update_square_running(grid_idx, position, mark):
         
     elif grid[position[1]][position[0]] == 2 and mark == 2:
         # pin despawn 
+        gone.play()
         despawn_pin(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 0
         
@@ -448,6 +462,7 @@ def update_square_running(grid_idx, position, mark):
 
 # Ultimate animation
 def ult_animation(player_idx, character_sprite):
+    crit.play()
     character_image = pygame.image.load(character_sprite)
     character_image = pygame.transform.scale(character_image, (1920, 1080))  # Resize if necessary
     
@@ -545,6 +560,7 @@ def random_powerup(player):
     
     
 def reveal_grid(player):
+    soap.play()
     revealed_idx = random.randint(0, 4)
     # effect
     if player == 0:
@@ -568,6 +584,7 @@ def reveal_grid(player):
     
 
 def swap_puzzles():
+    debuff.play()
     # play swap sound effect
     global solution_grid_1, solution_grid_2
     temp = solution_grid_1
@@ -662,9 +679,13 @@ def update_scores(player):
         
 
 def sudden_death_sequence(): 
+    global played_sudden
+    if not played_sudden:
+        played_sudden = True
+        clang.play()
     global sudden_death_flag 
-    sudden_death_text_1 = font.render(f"SUDDEN DEATH!", True, BLACK)
-    sudden_death_text_2 = font.render(f"FIRST TO FINISH WINS!", True, BLACK)
+    sudden_death_text_1 = font.render(f"SUDDEN DEATH!", True, RED)
+    sudden_death_text_2 = font.render(f"FIRST TO FINISH WINS!", True, RED)
     screen.blit(sudden_death_text_1, (WINDOW_WIDTH // 2 - 80 , WINDOW_HEIGHT // 2 - 100))
     screen.blit(sudden_death_text_2, (WINDOW_WIDTH // 2 - 125 , WINDOW_HEIGHT // 2))
     sudden_death_flag = True
@@ -673,11 +694,11 @@ def sudden_death_sequence():
 def game_end_sequence_sudden_death():
     global winner 
     if player_scores[0] > player_scores[1]:
-        game_over_text = font.render("Player 1 Wins!", True, BLACK)
+        game_over_text = font.render("Player 1 Wins!", True, RED)
         screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75 , WINDOW_HEIGHT // 2))
         winner = player_1_character
     else: 
-        game_over_text = font.render("Player 2 Wins!", True, BLACK)
+        game_over_text = font.render("Player 2 Wins!", True, RED)
         screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75, WINDOW_HEIGHT // 2 + 100))
         winner = player_2_character
     
@@ -820,7 +841,7 @@ def picross_game():
             
         pygame.display.flip()
     
-    return winner
+    return 
 
 
 def start_picross(character_1, character_2):

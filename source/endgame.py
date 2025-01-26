@@ -101,13 +101,15 @@ text_font = pygame.font.SysFont(None, 100)
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 bg = pygame.image.load('source/art/bg_dark.png')
+win = pygame.mixer.Sound('source/music/win.mp3')
 
 
 # Winner is a character
 def end_screen(winner):
+    win.play()
     global text
     current = True
-    text = text_font.render(winner["win_quote"], True, WHITE)
+    text = text_font.render(winner['win_quote'], True, WHITE)
     while current:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
