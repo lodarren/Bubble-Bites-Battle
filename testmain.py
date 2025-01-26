@@ -4,6 +4,8 @@ import characterselect
 
 # Initialize Pygame
 pygame.init()
+clock = pygame.time.Clock()
+clock.tick(120)
 pygame.mixer.init(44100, -16, 2, 4096)
 pygame.mixer.music.load("music\start0.wav")
 
@@ -20,7 +22,7 @@ char_bubble_waffle = {
     'neutral_sprite' : 'art/0_idle.png',
     'hit_sprite' : 'art/0_hurt.png',
     'attack_sprite' : 'art/0_attack.png', 
-    'bar_sprite' : 'art/border.png',
+    'bar_sprite' : 'art/0_border.png',
     'progression_meter_sprite' : 'art/0_uncharged.png', 
     'charged_meter_sprite' : 'art/0_charged.png', 
 
@@ -40,8 +42,8 @@ char_bubble_chocolate = {
     'neutral_sprite' : 'art/1_idle.png',
     'hit_sprite' : 'art/1_hurt.png',
     'attack_sprite' : "art/1_attack.png", 
-    'bar_sprite' : 'art/border.png',
-    'progression_meter_sprite' : 'art.1_uncharged.png', 
+    'bar_sprite' : 'art/1_border.png',
+    'progression_meter_sprite' : 'art/1_uncharged.png', 
     'charged_meter_sprite' : 'art/1_charged.png', 
 
     'colour_rgb' : (255, 227, 227)
@@ -57,12 +59,12 @@ char_bubble_tea = {
     'effect_description' : "Blow up the enemy's board!", 
     'character_description' : 'The nomadic fiend', 
 
-    'neutral_sprite' : 'art/3_idle.png',
-    'hit_sprite' : 'art/3_hurt.png',
-    'attack_sprite' : "art/3_attack.png", 
-    'bar_sprite' : 'art/border.png',
-    'progression_meter_sprite' : 'art.3_uncharged.png', 
-    'charged_meter_sprite' : 'art/3_charged.png', 
+    'neutral_sprite' : 'art/2_idle.png',
+    'hit_sprite' : 'art/2_hurt.png',
+    'attack_sprite' : "art/2_attack.png", 
+    'bar_sprite' : 'art/2_border.png',
+    'progression_meter_sprite' : 'art/2_uncharged.png', 
+    'charged_meter_sprite' : 'art/2_charged.png', 
 
     'colour_rgb' : (228, 255, 227)
 }
@@ -77,12 +79,12 @@ char_bubble_gum = {
     'effect_description' : "Blow up the enemy's board!", 
     'character_description' : 'The nomadic fiend', 
 
-    'neutral_sprite' : 'art/4_idle.png',
-    'hit_sprite' : 'art/4_hurt.png',
-    'attack_sprite' : "art/4_attack.png", 
-    'bar_sprite' : 'art/border.png',
-    'progression_meter_sprite' : 'art.4_uncharged.png', 
-    'charged_meter_sprite' : 'art/4_charged.png', 
+    'neutral_sprite' : 'art/3_idle.png',
+    'hit_sprite' : 'art/3_hurt.png',
+    'attack_sprite' : "art/3_attack.png", 
+    'bar_sprite' : 'art/3_border.png',
+    'progression_meter_sprite' : 'art/3_uncharged.png', 
+    'charged_meter_sprite' : 'art/3_charged.png', 
 
     'colour_rgb' : (239, 227, 255)
 }
@@ -109,6 +111,6 @@ while True:
         characterselect.character_select_screen()
     while GAME_STATE == "PICROSS":
         pygame.mixer.music.play(-1,0,0)
-        picross.start_picross(character_2, character_2)
+        picross.start_picross(char_bubble_waffle, char_bubble_waffle)
     while GAME_STATE == "END_SCREEN":
         pass
