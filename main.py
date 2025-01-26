@@ -1,6 +1,7 @@
 import pygame
 import picross
 import characterselect
+import endgame
 
 # Initialize Pygame
 pygame.init()
@@ -9,11 +10,11 @@ start0 = pygame.mixer.Sound('music/start0.wav')
 extend0 = pygame.mixer.Sound('music/extend0.wav')
 extend0.set_volume(0.5)
 
-character_1 = {
+char_bubble_waffle = {
     # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
     'effect' : 0,
     # between 1 and 0
-    'multiplier' : 0.75, 
+    'multiplier' : 0.5, 
 
     'win_quote' : 'The was a nice try... Punk.',
     'effect_description' : "Blow up the enemy's board!", 
@@ -21,32 +22,72 @@ character_1 = {
 
     'neutral_sprite' : 'art/0_idle.png',
     'hit_sprite' : 'art/0_hurt.png',
-    'attack_sprite' : 'art/2_attack.png', 
-    'bar_sprite' : 'art/border.png',
+    'attack_sprite' : 'art/0_attack.png', 
+    'bar_sprite' : 'art/0_border.png',
     'progression_meter_sprite' : 'art/0_uncharged.png', 
     'charged_meter_sprite' : 'art/0_charged.png', 
 
-    'colour_hexcodes' : '#fffce3'
+    'colour_rgb' : (255, 252, 227)
 }
 
-character_2 = {
+char_bubble_chocolate = {
     # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
     'effect' : 1,
     # between 1 and 0
-    'multiplier' : 0.75, 
+    'multiplier' : 1.0, 
 
-    'win_quote' : 'AAAAAAAAAAAAAAAAAAAAAA',
-    'effect_description' : "AAAAAAAAAAAAAAAAAAAAAA", 
-    'character_description' : 'AAAAAAAAAAAAAAAAAAAAAA', 
+    'win_quote' : 'The was a nice try... Punk.',
+    'effect_description' : "Blow up the enemy's board!", 
+    'character_description' : 'The nomadic fiend', 
 
-    'neutral_sprite' : 'art/0_idle.png',
-    'hit_sprite' : 'art/0_hurt.png',
+    'neutral_sprite' : 'art/1_idle.png',
+    'hit_sprite' : 'art/1_hurt.png',
+    'attack_sprite' : "art/1_attack.png", 
+    'bar_sprite' : 'art/1_border.png',
+    'progression_meter_sprite' : 'art/1_uncharged.png', 
+    'charged_meter_sprite' : 'art/1_charged.png', 
+
+    'colour_rgb' : (255, 227, 227)
+}
+
+char_bubble_tea = {
+    # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
+    'effect' : 2,
+    # between 1 and 0
+    'multiplier' : 1.0, 
+
+    'win_quote' : 'The was a nice try... Punk.',
+    'effect_description' : "Blow up the enemy's board!", 
+    'character_description' : 'The nomadic fiend', 
+
+    'neutral_sprite' : 'art/2_idle.png',
+    'hit_sprite' : 'art/2_hurt.png',
     'attack_sprite' : "art/2_attack.png", 
-    'bar_sprite' : 'art/border.png',
-    'progression_meter_sprite' : 'art.0_uncharged.png', 
-    'charged_meter_sprite' : 'art/0_charged.png', 
+    'bar_sprite' : 'art/2_border.png',
+    'progression_meter_sprite' : 'art/2_uncharged.png', 
+    'charged_meter_sprite' : 'art/2_charged.png', 
 
-    'colour_hexcodes' : '#fffce3'
+    'colour_rgb' : (228, 255, 227)
+}
+
+char_bubble_gum = {
+    # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
+    'effect' : 3,
+    # between 1 and 0
+    'multiplier' : 0.5, 
+
+    'win_quote' : 'The was a nice try... Punk.',
+    'effect_description' : "Blow up the enemy's board!", 
+    'character_description' : 'The nomadic fiend', 
+
+    'neutral_sprite' : 'art/3_idle.png',
+    'hit_sprite' : 'art/3_hurt.png',
+    'attack_sprite' : "art/3_attack.png", 
+    'bar_sprite' : 'art/3_border.png',
+    'progression_meter_sprite' : 'art/3_uncharged.png', 
+    'charged_meter_sprite' : 'art/3_charged.png', 
+
+    'colour_rgb' : (239, 227, 255)
 }
 
 # Screen dimensions
@@ -60,7 +101,7 @@ pygame.display.set_caption("Picross")
 # - "CHARACTER_SELECT"
 # - "PICROSS"
 # - "END_SCREEN"
-GAME_STATE = "CHARACTER_SELECT"
+GAME_STATE = "END_SCREEN"
 
 VOLUME = 1.0
 pygame.mixer.music.set_volume(VOLUME)
@@ -74,6 +115,9 @@ while True:
         extend0.stop()
         extend0.play(loops=-1) 
         winner = picross.start_picross(characters_chosen[0], characters_chosen[1])
+        GAME_STATE = "END_SCREEN"
     elif GAME_STATE == "END_SCREEN":
         extend0.play()
-        pass
+        endgame.end_screen(winner)
+
+
