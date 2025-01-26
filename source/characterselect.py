@@ -63,10 +63,10 @@ rox_y = WINDOW_HEIGHT - box_height - 20 # 20px padding from the bottom
 
 # Possible Texts
 des = {
-0: "The nomadic fiend - Bubble Waffle \nDon't mess with Bubble Waffle, \nhe tastes extra aggresive today! \n Skill - Blow up your foe's board!",
-1: "The tricksters - Bubble Chocolates \nWant double the trouble? \nBubble Chocolate twins are here!\n Skill - Gamble your points!",
-2: "The shy pop - Bubble Tea \nOne cute matcha bubble tea with the \nbest pearls in town, please!\n Skill - Autosolve a column!",
-3: "The bubble queen - Bubble Gum \nThe sassiest pink bubble gum from the \nsweetest gumball machine you'll ever meet!\n Skill - Something!"
+0: "The raging beast - Bubble Waffle \nDon't mess with Bubble Waffle, \nhe tastes extra aggresive today! \n Skill - Blow up your foe's board!",
+1: "The tricksters - Bubble Chocolates \nWant double the trouble? \nBubble Chocolate twins are here!\n Skill - Switch your board with the foe!",
+2: "The shy pop - Bubble Tea \nOne cute matcha bubble tea with the \nbest pearls in town, please!\n Skill - Random Powerup!",
+3: "The bubble queen - Bubble Gum \nThe sassiest pink bubble gum from the \nsweetest gumball machine you'll ever meet!\n Skill - Autosolves 3 rows!"
 }
 
 # can be between 0-3, [player_1, player_2]

@@ -8,7 +8,9 @@ pygame.init()
 pygame.mixer.init(44100, -16, 2, 4096)
 start0 = pygame.mixer.Sound('source/music/start0.wav')
 extend0 = pygame.mixer.Sound('source/music/extend0.wav')
+picross0 = pygame.mixer.Sound('source/music/Picross.wav')
 extend0.set_volume(0.5)
+picross0.set_volume(0.5)
 
 char_bubble_waffle = {
     # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
@@ -16,9 +18,9 @@ char_bubble_waffle = {
     # between 1 and 0
     'multiplier' : 0.5, 
 
-    'win_quote' : 'The was a nice try... Punk.',
-    'effect_description' : "Blow up the enemy's board!", 
-    'character_description' : 'The nomadic fiend', 
+    'win_quote' : 'That was a nice try... punk.',
+    'effect_description' : "Blow up your foe's board!", 
+    'character_description' : "The raging beast - Bubble Waffle \nDon't mess with Bubble Waffle, \nhe tastes extra aggresive today! \n Skill - Blow up your foe's board!", 
 
     'neutral_sprite' : 'source/art/0_idle.png',
     'hit_sprite' : 'source/art/0_hurt.png',
@@ -36,9 +38,9 @@ char_bubble_chocolate = {
     # between 1 and 0
     'multiplier' : 1.0, 
 
-    'win_quote' : 'The was a nice try... Punk.',
-    'effect_description' : "Blow up the enemy's board!", 
-    'character_description' : 'The nomadic fiend', 
+    'win_quote' : 'You couldn\'t even beat half of us!',
+    'effect_description' : "Switch your board with the foe!", 
+    'character_description' : "The tricksters - Bubble Chocolates \nWant double the trouble? \nBubble Chocolate twins are here!\n Skill - Switch your board with the foe!", 
 
     'neutral_sprite' : 'source/art/1_idle.png',
     'hit_sprite' : 'source/art/1_hurt.png',
@@ -56,9 +58,9 @@ char_bubble_tea = {
     # between 1 and 0
     'multiplier' : 1.0, 
 
-    'win_quote' : 'The was a nice try... Punk.',
-    'effect_description' : "Blow up the enemy's board!", 
-    'character_description' : 'The nomadic fiend', 
+    'win_quote' : 'T-thanks for going easy on me...',
+    'effect_description' : "Random Powerup!", 
+    'character_description' : "The shy pop - Bubble Tea \nOne cute matcha bubble tea with the \nbest pearls in town, please!\n Skill - Random Powerup!", 
 
     'neutral_sprite' : 'source/art/2_idle.png',
     'hit_sprite' : 'source/art/2_hurt.png',
@@ -76,9 +78,9 @@ char_bubble_gum = {
     # between 1 and 0
     'multiplier' : 0.5, 
 
-    'win_quote' : 'The was a nice try... Punk.',
-    'effect_description' : "Blow up the enemy's board!", 
-    'character_description' : 'The nomadic fiend', 
+    'win_quote' : 'Move aside plebeian!',
+    'effect_description' : "Autosolves 3 rows!", 
+    'character_description' : "The bubble queen - Bubble Gum \nThe sassiest pink bubble gum from the \nsweetest gumball machine you'll ever meet!\n Skill - Autosolves 3 rows!", 
 
     'neutral_sprite' : 'source/art/3_idle.png',
     'hit_sprite' : 'source/art/3_hurt.png',
@@ -121,10 +123,10 @@ while True:
         GAME_STATE = 'PICROSS'
     elif GAME_STATE == "PICROSS":
         extend0.stop()
-        extend0.play(loops=-1) 
+        picross0.play(loops=-1) 
         winner = picross.start_picross(characters[characters_chosen[0]], characters[characters_chosen[1]])
         GAME_STATE = "END_SCREEN"
     elif GAME_STATE == "END_SCREEN":
-        extend0.stop()
+        picross0.stop()
         #extend0.play()
         endgame.end_screen(winner)

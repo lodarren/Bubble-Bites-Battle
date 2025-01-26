@@ -59,8 +59,8 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Picross")
 
 # Timer settings
-TIMER_DURATION = 10 #80  # Countdown duration in seconds
-start_ticks = pygame.time.get_ticks()  # Record the start time
+TIMER_DURATION = 25 #80  # Countdown duration in seconds
+start_ticks = pygame.time.get_ticks() + 2000  # Record the start time
 
 # Example solution grid (1 for filled, 0 for empty)
 solution_grid_1 = [
@@ -833,3 +833,4 @@ def start_picross(character_1, character_2):
     player_2_character = character_2
 
     picross_game()
+    return winner
