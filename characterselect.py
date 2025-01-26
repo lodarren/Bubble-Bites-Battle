@@ -128,7 +128,6 @@ def draw_descriptions():
     print('STUB')
 
 
-
 ################################
 # Main function
 def character_select_screen():
