@@ -1,4 +1,5 @@
 import pygame
+import time
 
 # Initialize Pygame
 pygame.init()
@@ -23,15 +24,9 @@ clock = pygame.time.Clock()
 bg = pygame.image.load('art/bg_character_select.png')
 
 # Font
-text_font = pygame.font.SysFont(None, 100)
+text_font = pygame.font.SysFont(None, 50)
 
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-YELLOW = (255, 255, 0)
-RED = (255, 0, 0)
-ORANGE = (255,127,80)
-BLUE = (0, 0, 255)
-image_paths = ["art/0_idle.png", "art/2_idle.png", "art/2_idle.png", "art/3_idle.png"]
+image_paths = ["art/0_idle.png", "art/1_idle.png", "art/2_idle.png", "art/3_idle.png"]
 images_raw = [pygame.image.load(path) for path in image_paths]
 
 
@@ -46,23 +41,50 @@ total_width = len(images) * TILE_WIDTH + (len(images) - 1) * 10
 start_x = (WINDOW_WIDTH - total_width) // 2
 start_y = (WINDOW_HEIGHT - TILE_HEIGHT) // 4 * 3
 
+# Box dimensions (Rightside)
+box_width = 860
+box_height = 200
+box_x = WINDOW_WIDTH - box_width - 20  # 20px padding from the right
+box_y = WINDOW_HEIGHT - box_height - 20 # 20px padding from the bottom
+rect_surface = pygame.Surface((box_width, box_height), pygame.SRCALPHA)  # Surface with alpha
+rect_surface.fill((0, 0, 0, 0))  # Clear the surface (fully transparent)
+
+
+# Rox dimensions (Leftside Box)
+rox_x = 20  # 20px padding from the right
+rox_y = WINDOW_HEIGHT - box_height - 20 # 20px padding from the bottom
+
+# Possible Texts
+des = {
+0: "The nomadic fiend - Bubble Waffle \nDon't mess with Bubble Waffle, \nhe tastes extra aggresive today! \n Skill - Blow up your foe's board!",
+1: "The tricksters - Bubble Chocolates \nWant double the trouble? \nBubble Chocolate twins are here!\n Skill - Gamble your points!",
+2: "The shy pop - Bubble Tea \nOne cute matcha bubble tea with the \nbest pearls in town, please!\n Skill - Autosolve a column!",
+3: "The bubble queen - Bubble Gum \nThe sassiest pink bubble gum from the \nsweetest gumball machine you'll ever meet!\n Skill - Something!"
+}
+
 # can be between 0-3, [player_1, player_2]
 player_cursors = [0, 3]
 
-
-
+# Initial zoom settings
+zoom_factor = 1
+zooming = False
+zoom_start_time = 0
+zoom_duration = 3
 
 # Test Image
 def draw_bg():
-    screen.blit(bg, (0,0))
+    zoomed_bg = pygame.transform.scale(bg, (int(WINDOW_WIDTH * zoom_factor), int(WINDOW_HEIGHT * zoom_factor)))
+    x_offset = (zoomed_bg.get_width() - WINDOW_WIDTH) // 2
+    y_offset = (zoomed_bg.get_height() - WINDOW_HEIGHT) // 2
+    screen.blit(zoomed_bg, (-x_offset, -y_offset))
 
 def slide(image, direction):
     image = pygame.transform.scale(image, (1485, 810))
     if direction == "right":
         image = pygame.transform.flip(image, True, False)
-        screen.blit(image, (WINDOW_WIDTH // 2, 0))
+        screen.blit(image, (WINDOW_WIDTH // 2 - 150, 0))
     elif direction == "left":
-        screen.blit(image, (- 1 * WINDOW_WIDTH // 4, 0))
+        screen.blit(image, (- 1 * WINDOW_WIDTH // 4 + 150, 0))
 
 def update_cursor_position(player, value):
     if type(player_select_flags[player]) != bool:
@@ -125,12 +147,31 @@ def select_character(player_index, select_type):
 
 ################################
 def draw_descriptions():
-    print('STUB')
+    pygame.draw.rect(screen, WHITE, (box_x, box_y, box_width, box_height), border_radius=10)
+    pygame.draw.rect(screen, WHITE, (rox_x, rox_y, box_width, box_height), border_radius=10)
+    draw_words()
 
+def draw_words():
+    lines = des[player_cursors[1]].splitlines()
+    line_height = text_font.get_linesize()  # Get the height of each line
+    for i, line in enumerate(lines):
+        # Render each line
+        text_surface = text_font.render(line, True, BLACK)
+        text_rect = text_surface.get_rect(center=(box_x + box_width // 2, box_y + 40 + i * line_height))
+        screen.blit(text_surface, text_rect)
+
+    lines_2 = des[player_cursors[0]].splitlines()
+    line_height = text_font.get_linesize()  # Get the height of each line
+    for i, line in enumerate(lines_2):
+        # Render each line
+        text_surface_2 = text_font.render(line, True, BLACK)
+        text_rect_2 = text_surface_2.get_rect(center=(box_width // 2 + 20, box_y + 40 + i * line_height))
+        screen.blit(text_surface_2, text_rect_2)
 
 ################################
 # Main function
 def character_select_screen():
+    global zooming, zoom_factor, zoom_start_time
     running = True
     while running:
         for event in pygame.event.get(): 
@@ -144,16 +185,31 @@ def character_select_screen():
                 select_character(*SELECT_BUTTONS[event.key])
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 if player_select_flags[0] and player_select_flags[1]:
-                    running = False
-                    print('DONE')
-                    return player_select_flags
+                    # Start zoom effect when Enter is pressed
+                    zooming = True
+                    zoom_start_time = time.time()  # Capture time when Enter is pressed
+                    
+        
+        if zooming:
+            elapsed_time = time.time() - zoom_start_time
+            if elapsed_time < zoom_duration:
+                zoom_factor = 1 + (elapsed_time / zoom_duration)  # Gradually zoom in
+            else:
+                zoom_factor = 2  # Max zoom after 3 seconds
+                zooming = False  # Stop zooming after the effect is finished
+                running = False
+                print('DONE')
+                return player_select_flags
 
-        draw_bg()
-        slide(images_raw[player_cursors[0]], 'left')
-        slide(images_raw[player_cursors[1]], 'right')
-        draw_tiles()
-        draw_descriptions()
-        draw_ready_to_battle()
+        if zooming:
+            draw_bg()
+        else:
+            draw_bg()
+            slide(images_raw[player_cursors[0]], 'left')
+            slide(images_raw[player_cursors[1]], 'right')
+            draw_tiles()
+            draw_descriptions()
+            draw_ready_to_battle()
 
         pygame.display.update()
 

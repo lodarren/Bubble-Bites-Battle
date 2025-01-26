@@ -33,9 +33,9 @@ character_2 = {
     # between 1 and 0
     'multiplier' : 0.75, 
 
-    'win_quote' : 'The was a nice try... Punk.',
-    'effect_description' : "Blow up the enemy's board!", 
-    'character_description' : 'The nomadic fiend', 
+    'win_quote' : 'AAAAAAAAAAAAAAAAAAAAAA',
+    'effect_description' : "AAAAAAAAAAAAAAAAAAAAAA", 
+    'character_description' : 'AAAAAAAAAAAAAAAAAAAAAA', 
 
     'neutral_sprite' : 'art/0_idle.png',
     'hit_sprite' : 'art/0_hurt.png',
