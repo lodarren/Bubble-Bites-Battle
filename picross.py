@@ -45,7 +45,7 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Picross")
 
 # Timer settings
-TIMER_DURATION = 3  # Countdown duration in seconds
+TIMER_DURATION = 180  # Countdown duration in seconds
 start_ticks = pygame.time.get_ticks()  # Record the start time
 
 # Example solution grid (1 for filled, 0 for empty)
@@ -85,7 +85,7 @@ player_grids = [
                 [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)], 
                 [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
                 ]
-player_meters = [0.2, 0.3]
+player_meters = [1, 1]
 player_scores = [0, 0]
 player_characters = [player_1_character, player_2_character]
 
@@ -257,15 +257,16 @@ def update_square_running(grid, position, mark):
 # Ultimate attack
 def player_ult(character, player):
     global player_meters
-    if player_meters[player] == 100: 
+    if player_meters[player] == 1: 
         print(f'PLAYER {player} SUPER')
+        player_meters[player] = 0
     else: 
         print('failed')
 
 # TODO restart the puzzle
 def restart_puzzle(player):
     global solution_grid_1, solution_grid_2
-    
+    '''
     if player == 0:     
         solution_grid_1 = puzzles.puzzles[random.randint(0, len(puzzles.puzzles) - 1)]
         player_grids[0] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
@@ -273,16 +274,16 @@ def restart_puzzle(player):
         solution_grid_2 = puzzles.puzzles[random.randint(0, len(puzzles.puzzles) - 1)]
         player_grids[1] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
         
-    '''
-    This is the random puzzle generator
     
+    This is the random puzzle generator
+    '''
     if player == 0:     
         solution_grid_1 = [[random.randint(0, 1) for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
         player_grids[0] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
     else: 
         solution_grid_2 = [[random.randint(0, 1) for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
         player_grids[1] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
-    '''
+    
 # Game loop
 key_states_movement = {} # When a key is pressed
 key_states_placement = {} # When a key is pressed
@@ -453,7 +454,6 @@ def picross_game():
         
         # Check if the timer runs out
         if remaining_time <= 0:
-            print(running)
             if player_scores[0] != player_scores[1] and running:
                 if sudden_death_flag: 
                     game_end_sequence_sudden_death()
@@ -462,11 +462,9 @@ def picross_game():
                     print("i ran")
                 pygame.time.wait(3000)  # Wait for 3 seconds before quitting
                 running = False
-                print(running)
             elif remaining_time <= 0 and player_scores[0] == player_scores[1] and running:
                 sudden_death_sequence()
             
-        #screen.blit(font.render(text, True, (0, 0, 0)), (32, 48))
         pygame.display.flip()
     
     return winner
@@ -491,11 +489,11 @@ def start_picross(character_1, character_2):
 
 
 # CLOCK DONE
-# Add score
+# Add score DONE
 # Super animation when add/destroy
 # meter scores DONE
 # add sprites 
-# add 7x7 picross puzzles
+# add 7x7 picross puzzles DONE
 
 
 # TODO Build the UI
