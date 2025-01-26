@@ -43,8 +43,8 @@ SCORE2_OFFSET = (WINDOW_WIDTH // 2 + 150, 75)
 
 # DAS Constants
 DAS_DELAY = 0
-DAS_INTERVAL = 100
-
+DAS_INTERVAL = 0
+  
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -59,30 +59,12 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Picross")
 
 # Timer settings
-TIMER_DURATION = 25 #80  # Countdown duration in seconds
+TIMER_DURATION = 300  # Countdown duration in seconds
 start_ticks = pygame.time.get_ticks()  # Record the start time
 
 # Example solution grid (1 for filled, 0 for empty)
-solution_grid_1 = [
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-]
-#puzzles.puzzles[random.randint(0, len(puzzles.puzzles) - 1)]
-solution_grid_2 = [
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-]
-#puzzles.puzzles[random.randint(0, len(puzzles.puzzles) - 1)]
+solution_grid_1 = puzzles.puzzles[random.randint(0, len(puzzles.puzzles) - 1)]
+solution_grid_2 = puzzles.puzzles[random.randint(0, len(puzzles.puzzles) - 1)]
 # Player's current state
 
 player_1_cursor = [0, 0]
@@ -340,7 +322,7 @@ def update_animations():
             pygame.display.update()
             animation['last_update_time'] = current_time 
             if animation['despawning']:
-                animation['idx'] -= 2
+                animation['idx'] -= 10
                 if animation['idx'] <= 0:
                     del bubble_animations[(x, y)] 
             else:
