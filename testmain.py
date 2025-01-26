@@ -7,7 +7,7 @@ pygame.init()
 pygame.mixer.init(44100, -16, 2, 4096)
 pygame.mixer.music.load("music\start0.wav")
 
-character_1 = {
+char_bubble_waffle = {
     # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
     'effect' : 0,
     # between 1 and 0
@@ -24,10 +24,10 @@ character_1 = {
     'progression_meter_sprite' : 'art/0_uncharged.png', 
     'charged_meter_sprite' : 'art/0_charged.png', 
 
-    'colour_hexcodes' : '#fffce3'
+    'colour_rgb' : (255, 252, 227)
 }
 
-character_2 = {
+char_bubble_chocolate = {
     # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
     'effect' : 1,
     # between 1 and 0
@@ -44,10 +44,10 @@ character_2 = {
     'progression_meter_sprite' : 'art.1_uncharged.png', 
     'charged_meter_sprite' : 'art/1_charged.png', 
 
-    'colour_hexcodes' : '#fffce3'
+    'colour_rgb' : (255, 227, 227)
 }
 
-character_3 = {
+char_bubble_tea = {
     # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
     'effect' : 2,
     # between 1 and 0
@@ -64,10 +64,10 @@ character_3 = {
     'progression_meter_sprite' : 'art.3_uncharged.png', 
     'charged_meter_sprite' : 'art/3_charged.png', 
 
-    'colour_hexcodes' : '#fffce3'
+    'colour_rgb' : (228, 255, 227)
 }
 
-character_4 = {
+char_bubble_gum = {
     # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
     'effect' : 3,
     # between 1 and 0
@@ -84,7 +84,7 @@ character_4 = {
     'progression_meter_sprite' : 'art.4_uncharged.png', 
     'charged_meter_sprite' : 'art/4_charged.png', 
 
-    'colour_hexcodes' : '#fffce3'
+    'colour_rgb' : (239, 227, 255)
 }
 
 # Screen dimensions

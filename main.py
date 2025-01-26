@@ -58,17 +58,18 @@ pygame.display.set_caption("Picross")
 # - "CHARACTER_SELECT"
 # - "PICROSS"
 # - "END_SCREEN"
-GAME_STATE = "PICROSS"
+GAME_STATE = "CHARACTER_SELECT"
 
 VOLUME = 1.0
 pygame.mixer.music.set_volume(VOLUME)
 
 while True:
-    while GAME_STATE == "CHARACTER_SELECT":
+    if GAME_STATE == "CHARACTER_SELECT":
         pygame.mixer.music.play(-1,0,0)
-        characterselect.character_select_screen()
-    while GAME_STATE == "PICROSS":
+        characters_chosen = characterselect.character_select_screen()
+        GAME_STATE = 'PICROSS'
+    elif GAME_STATE == "PICROSS":
         pygame.mixer.music.play(-1,0,0)
-        picross.start_picross(character_1, character_2)
-    while GAME_STATE == "END_SCREEN":
+        picross.start_picross(characters_chosen[0], characters_chosen[1])
+    elif GAME_STATE == "END_SCREEN":
         pass
