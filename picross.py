@@ -271,31 +271,57 @@ def update_cursor_position(axis, value, player):
         
 bubble_animations = {}  # Stores ongoing bubble animations by (x, y)
 pin_animations = {}  # Stores ongoing pin animations by (x, y)
+soap_animations = {}
 
-# Modify spawn_bubble and despawn_bubble to properly handle 'despawning' key
-
-def spawn_bubble(x, y):
+def spawn_bubble(x, y, grid_idx):
+    gridoffset = (0, 0)
+    if grid_idx == 0:
+        gridoffset = GRID1_OFFSET
+    else:
+        gridoffset = GRID2_OFFSET
     # Starting position and frame tracking
-    x, y = GRID1_OFFSET[0] + x * CELL_SIZE, GRID1_OFFSET[1] + y * CELL_SIZE
+    x, y = gridoffset[0] + x * CELL_SIZE, gridoffset[1] + y * CELL_SIZE
     bubble_animations[(x, y)] = {'idx': 1, 'last_update_time': pygame.time.get_ticks(), 'despawning': False}
 
-def despawn_bubble(x, y):
+def despawn_bubble(x, y, grid_idx):
+    gridoffset = (0, 0)
+    if grid_idx == 0:
+        gridoffset = GRID1_OFFSET
+    else:
+        gridoffset = GRID2_OFFSET
     # Starting position and frame tracking for despawning
-    x, y = GRID1_OFFSET[0] + x * CELL_SIZE, GRID1_OFFSET[1] + y * CELL_SIZE
+    x, y = gridoffset[0] + x * CELL_SIZE, gridoffset[1] + y * CELL_SIZE
     bubble_animations[(x, y)] = {'idx': 8, 'last_update_time': pygame.time.get_ticks(), 'despawning': True}
 
-# Modify spawn_pin and despawn_pin similarly
-
-def spawn_pin(x, y):
+def spawn_pin(x, y, grid_idx):
+    gridoffset = (0, 0)
+    if grid_idx == 0:
+        gridoffset = GRID1_OFFSET
+    else:
+        gridoffset = GRID2_OFFSET
     # Starting position and frame tracking
-    x, y = GRID1_OFFSET[0] + x * CELL_SIZE, GRID1_OFFSET[1] + y * CELL_SIZE
+    x, y = gridoffset[0] + x * CELL_SIZE, gridoffset[1] + y * CELL_SIZE
     pin_animations[(x, y)] = {'idx': 1, 'last_update_time': pygame.time.get_ticks(), 'despawning': False}
 
-def despawn_pin(x, y):
+def despawn_pin(x, y, grid_idx):
+    gridoffset = (0, 0)
+    if grid_idx == 0:
+        gridoffset = GRID1_OFFSET
+    else:
+        gridoffset = GRID2_OFFSET
     # Starting position and frame tracking for despawning
-    x, y = GRID1_OFFSET[0] + x * CELL_SIZE, GRID1_OFFSET[1] + y * CELL_SIZE
+    x, y = gridoffset[0] + x * CELL_SIZE, gridoffset[1] + y * CELL_SIZE
     pin_animations[(x, y)] = {'idx': 1, 'last_update_time': pygame.time.get_ticks(), 'despawning': True}
 
+def spawn_soap(x, y, grid_idx):
+    gridoffset = (0, 0)
+    if grid_idx == 0:
+        gridoffset = GRID1_OFFSET
+    else:
+        gridoffset = GRID2_OFFSET
+    # Starting position and frame tracking for despawning
+    x, y = gridoffset[0] + x * CELL_SIZE, gridoffset[1] + y * CELL_SIZE
+    soap_animations[(x, y)] = {'idx': 1, 'last_update_time': pygame.time.get_ticks(), 'despawning': True}
 
 def update_animations():
     # Update bubble animations
@@ -329,55 +355,84 @@ def update_animations():
                 animation['idx'] += 2
                 if animation['idx'] >= 12:
                     del pin_animations[(x, y)]  # Remove animation when finished
+    
+    # Update soap animations
+    for (x, y), animation in list(pin_animations.items()):
+        current_time = pygame.time.get_ticks()
+        if current_time - animation['last_update_time'] >= 100:  # Update every 100ms
+            screen.blit(pygame.image.load(f'art/s{int(animation["idx"])}.png'), (x, y))
+            pygame.display.update()
+            animation['last_update_time'] = current_time  # Update time
+            animation['idx'] += 2
+            if animation['idx'] >= 10:
+                del pin_animations[(x, y)]  # Remove animation when finished
 
 
 # Updates grid[r][c] with the specified mark        
-def update_square(grid, position, mark):
-    x, y = GRID1_OFFSET[0] + position[0] * CELL_SIZE, GRID1_OFFSET[1] + position[1] * CELL_SIZE
+def update_square(grid_idx, position, mark):
+
+    grid = player_grids[grid_idx]
     
     if grid[position[1]][position[0]] == 0 and mark == 1:
         # bubble spawn
-        spawn_bubble(position[0], position[1])
+        spawn_bubble(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 1
         
     elif grid[position[1]][position[0]] == 0 and mark == 2:
         # pin spawn
-        spawn_pin(position[0], position[1])
+        spawn_pin(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 2
         
     elif grid[position[1]][position[0]] == 1 and mark == 1:
         # bubble despawn
-        despawn_bubble(position[0], position[1])
+        despawn_bubble(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 0
         
     elif grid[position[1]][position[0]] == 1 and mark == 2:
         # pin spawn
-        spawn_pin(position[0], position[1])
+        spawn_pin(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 2
         
     elif grid[position[1]][position[0]] == 2 and mark == 1:
         # bubble spawn
-        spawn_bubble(position[0], position[1])
+        spawn_bubble(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 1
         
     elif grid[position[1]][position[0]] == 2 and mark == 2:
         # pin despawn 
-        despawn_pin(position[0], position[1])
+        despawn_pin(position[0], position[1], grid_idx)
         grid[position[1]][position[0]] = 0
         
     #print(f'Placed {mark} at {position}')
 
     
 # Similar to update_square, but doesn't replace marked squares    
-def update_square_running(grid, position, mark): 
-    if grid[position[1]][position[0]] == mark: 
-        grid[position[1]][position[0]] = mark
-    elif grid[position[1]][position[0]] == 2 and mark == 1:
-        grid[position[1]][position[0]] == 2
+def update_square_running(grid_idx, position, mark): 
+    grid = player_grids[grid_idx]
+    
+    if grid[position[1]][position[0]] == 0 and mark == 1:
+        # bubble spawn
+        spawn_bubble(position[0], position[1], grid_idx)
+        grid[position[1]][position[0]] = 1
+        
+    elif grid[position[1]][position[0]] == 0 and mark == 2:
+        # pin spawn
+        spawn_pin(position[0], position[1], grid_idx)
+        grid[position[1]][position[0]] = 2
+        
+    elif grid[position[1]][position[0]] == 1 and mark == 1:
+        pass
+
     elif grid[position[1]][position[0]] == 1 and mark == 2:
-        grid[position[1]][position[0]] == 1
-    else: 
-        grid[position[1]][position[0]] = mark
+        pass
+        
+    elif grid[position[1]][position[0]] == 2 and mark == 1:
+        pass 
+        
+    elif grid[position[1]][position[0]] == 2 and mark == 2:
+        # pin despawn 
+        despawn_pin(position[0], position[1], grid_idx)
+        grid[position[1]][position[0]] = 0
         
     #print(f'Placed {mark} at {position}')
 
@@ -385,6 +440,15 @@ def update_square_running(grid, position, mark):
 def ult_animation(player_idx, character_sprite):
     character_image = pygame.image.load(character_sprite)
     character_image = pygame.transform.scale(character_image, (1920, 1080))  # Resize if necessary
+    
+    character_1_img = pygame.image.load(player_1_character['hit_sprite'])
+    character_2_img = pygame.image.load(player_2_character['hit_sprite'])
+
+    character_2_img = pygame.transform.flip(character_2_img, True, False)
+
+    character_1_img = pygame.transform.scale(character_1_img, (192 * 2, 108 * 2))
+    character_2_img = pygame.transform.scale(character_2_img, (192 * 2, 108 * 2))
+        
     
     if player_idx == 0:
         character_rect = character_image.get_rect()
@@ -399,9 +463,11 @@ def ult_animation(player_idx, character_sprite):
 
         # TODO: Sound effect here
         
+
+        
         # Fade to black
         while fade_opacity < 255:
-            screen.fill(WHITE)
+            #screen.fill(WHITE)
             fade_surface.set_alpha(fade_opacity)
             screen.blit(fade_surface, (0, 0))
             fade_opacity += fade_speed
@@ -412,9 +478,10 @@ def ult_animation(player_idx, character_sprite):
             screen.fill(BLACK)
             screen.blit(character_image, character_rect)
             character_rect.x += character_speed
-            pygame.display.flip()
 
-    
+            screen.blit(pygame.transform.flip(pygame.transform.scale(pygame.image.load(player_2_character['bar_sprite']), (WINDOW_WIDTH // 2, 3 * CELL_SIZE)), True, False), (METER2_OFFSET[0], METER2_OFFSET[1]))
+            screen.blit(character_2_img, (WINDOW_WIDTH - 4 *  CELL_SIZE, METER2_OFFSET[1]))
+            pygame.display.flip()
     else:
         character_image = pygame.transform.flip(character_image, True, False) 
         character_rect = character_image.get_rect()
@@ -443,8 +510,10 @@ def ult_animation(player_idx, character_sprite):
             fade_surface.set_alpha(50)
             screen.blit(character_image, character_rect)
             character_rect.x += character_speed
+
+            screen.blit(pygame.transform.scale(pygame.image.load(player_1_character['bar_sprite']), (WINDOW_WIDTH // 2, 3 * CELL_SIZE)), (METER1_OFFSET[0], METER1_OFFSET[1]))
+            screen.blit(character_1_img, (- CELL_SIZE, METER1_OFFSET[1]))
             pygame.display.flip()
-        
     # Pause for a moment
     pygame.time.wait(100)
     
@@ -469,6 +538,7 @@ def reveal_grid(player):
     if player == 0:
         for r in range(revealed_idx, revealed_idx + 3):
             for c in range(GRID_SIZE):
+                spawn_soap(r, c, 1)
                 if solution_grid_1[r][c] == 1:
                     player_grids[player][r][c] = 1
                 else:
@@ -476,10 +546,13 @@ def reveal_grid(player):
     else:
         for r in range(revealed_idx, revealed_idx + 3):
             for c in range(GRID_SIZE):
+                spawn_soap(r, c, 1)
                 if solution_grid_2[r][c] == 1:
                     player_grids[player][r][c] = 1
                 else:
                     player_grids[player][r][c] = 2
+    pygame.display.update()           
+                    
     
 
 def swap_puzzles():
@@ -565,10 +638,10 @@ def update_scores(player):
     global player_scores, player_meters
     if player == 0:
         player_scores[0] += 1
-        player_meters[1] += 0.2
+        player_meters[1] += 0.5 * player_1_character['multiplier']
     elif player == 1: 
         player_scores[1] += 1
-        player_meters[0] += 0.2
+        player_meters[0] += 0.5 * player_2_character['multiplier']
     
     if player_meters[0] > 1: 
         player_meters[0] = 1
@@ -611,6 +684,15 @@ def game_end_sequence_normal():
     
     pygame.display.update()
 
+def flash_screen(player_idx):
+    if player_idx == 0:
+        pygame.draw.rect(screen, YELLOW, (GRID1_OFFSET[0], GRID1_OFFSET[1], CELL_SIZE * 7, CELL_SIZE * 7))
+    else:
+        pygame.draw.rect(screen, YELLOW, (GRID2_OFFSET[0], GRID2_OFFSET[1], CELL_SIZE * 7, CELL_SIZE * 7))
+    
+    pygame.display.flip()
+    
+        
 def picross_game():
     running = True
     while running:
@@ -640,7 +722,7 @@ def picross_game():
                     
                     for placement_key in PLACEMENT_BUTTONS:
                         if pressed_keys[placement_key]:
-                            update_square_running(player_grids[PLACEMENT_BUTTONS[placement_key][0]], player_positions[PLACEMENT_BUTTONS[placement_key][0]], PLACEMENT_BUTTONS[placement_key][1])
+                            update_square_running(PLACEMENT_BUTTONS[placement_key][0], player_positions[PLACEMENT_BUTTONS[placement_key][0]], PLACEMENT_BUTTONS[placement_key][1])
                     
             elif event.type == pygame.KEYUP and event.key in MOVEMENT_BUTTONS:
                 if event.key in key_states_movement:
@@ -654,7 +736,7 @@ def picross_game():
                 key_states_placement[event.key] = (current_time, player_positions[PLACEMENT_BUTTONS[event.key][0]])
                 last_action_time_placement[event.key] = (0, player_positions[PLACEMENT_BUTTONS[event.key][0]])
                 #print(f"Key {pygame.key.name(event.key)} pressed")
-                update_square(player_grids[PLACEMENT_BUTTONS[event.key][0]], player_positions[PLACEMENT_BUTTONS[event.key][0]], PLACEMENT_BUTTONS[event.key][1])
+                update_square(PLACEMENT_BUTTONS[event.key][0], player_positions[PLACEMENT_BUTTONS[event.key][0]], PLACEMENT_BUTTONS[event.key][1])
                 #print(player_grids[PLACEMENT_BUTTONS[event.key][0]])
 
             elif event.type == pygame.KEYDOWN:
@@ -670,7 +752,7 @@ def picross_game():
             pressed_keys = pygame.key.get_pressed()
             for placement_key in PLACEMENT_BUTTONS:
                 if pressed_keys[placement_key]:
-                    update_square_running(player_grids[PLACEMENT_BUTTONS[placement_key][0]], player_positions[PLACEMENT_BUTTONS[placement_key][0]], PLACEMENT_BUTTONS[placement_key][1])
+                    update_square_running(PLACEMENT_BUTTONS[placement_key][0], player_positions[PLACEMENT_BUTTONS[placement_key][0]], PLACEMENT_BUTTONS[placement_key][1])
             
             if elapsed >= DAS_DELAY:
                 time_since_last_action = current_time - last_action_time_movement[key]
@@ -685,12 +767,14 @@ def picross_game():
         if check_win(player_grids[0], solution_grid_1) and not player_1_win_flag:
             player_1_win_flag = True
             update_scores(0)
+            flash_screen(0)
             restart_puzzle(0)
             #print(player_grids[0])
             player_1_win_flag = False
         elif check_win(player_grids[1], solution_grid_2) and not player_2_win_flag:
             player_2_win_flag = True
             update_scores(1)
+            flash_screen(1)
             restart_puzzle(1)
             player_2_win_flag = False
             

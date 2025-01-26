@@ -111,6 +111,6 @@ while True:
         characterselect.character_select_screen()
     while GAME_STATE == "PICROSS":
         pygame.mixer.music.play(-1,0,0)
-        picross.start_picross(char_bubble_waffle, char_bubble_waffle)
+        picross.start_picross(char_bubble_gum, char_bubble_gum)
     while GAME_STATE == "END_SCREEN":
         pass
