@@ -1,6 +1,7 @@
 import pygame
 import picross
 import characterselect
+import endgame
 
 # Initialize Pygame
 pygame.init()
@@ -123,5 +124,6 @@ while True:
         extend0.play(loops=-1) 
         winner = picross.start_picross(characters[characters_chosen[0]], characters[characters_chosen[1]])
     elif GAME_STATE == "END_SCREEN":
+        extend0.stop()
         extend0.play()
-        pass
+        endgame.end_screen(winner)
