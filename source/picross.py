@@ -54,29 +54,30 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Picross")
 
 # Timer settings
-TIMER_DURATION = 180  # Countdown duration in seconds
+TIMER_DURATION = 10 #80  # Countdown duration in seconds
 start_ticks = pygame.time.get_ticks()  # Record the start time
 
 # Example solution grid (1 for filled, 0 for empty)
 solution_grid_1 = [
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
     [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
 ]
+#puzzles.puzzles[random.randint(0, len(puzzles.puzzles) - 1)]
 solution_grid_2 = [
-    [1, 0, 0, 0, 1, 0, 0],
-    [1, 0, 0, 0, 1, 0, 0],
-    [1, 0, 0, 0, 1, 0, 0],
-    [1, 0, 0, 0, 1, 0, 0],
-    [1, 0, 0, 0, 1, 0, 0],
-    [1, 0, 0, 0, 1, 0, 0],
-    [1, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
 ]
-
+#puzzles.puzzles[random.randint(0, len(puzzles.puzzles) - 1)]
 # Player's current state
 
 player_1_cursor = [0, 0]
@@ -601,7 +602,7 @@ def player_ult(character, player):
 # TODO restart the puzzle
 def restart_puzzle(player):
     global solution_grid_1, solution_grid_2
-    '''
+    
     if player == 0:     
         solution_grid_1 = puzzles.puzzles[random.randint(0, len(puzzles.puzzles) - 1)]
         player_grids[0] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
@@ -609,16 +610,16 @@ def restart_puzzle(player):
         solution_grid_2 = puzzles.puzzles[random.randint(0, len(puzzles.puzzles) - 1)]
         player_grids[1] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
         
-    
-    This is the random puzzle generator
     '''
+    This is the random puzzle generator
+    
     if player == 0:     
         solution_grid_1 = [[random.randint(0, 1) for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
         player_grids[0] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
     else: 
         solution_grid_2 = [[random.randint(0, 1) for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
         player_grids[1] = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
-    
+    '''
 # Game loop
 key_states_movement = {} # When a key is pressed
 key_states_placement = {} # When a key is pressed
@@ -670,16 +671,20 @@ def sudden_death_sequence():
 
 
 def game_end_sequence_sudden_death():
+    global winner 
     if player_scores[0] > player_scores[1]:
         game_over_text = font.render("Player 1 Wins!", True, BLACK)
         screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75 , WINDOW_HEIGHT // 2))
+        winner = player_1_character
     else: 
         game_over_text = font.render("Player 2 Wins!", True, BLACK)
         screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 75, WINDOW_HEIGHT // 2 + 100))
+        winner = player_2_character
     
     pygame.display.update()
 
 def game_end_sequence_normal():
+    global winner
     game_over_text = font.render("Time's Up!", True, BLACK)
     screen.blit(game_over_text, (WINDOW_WIDTH // 2 - 50, WINDOW_HEIGHT // 2))
     pygame.display.update()
@@ -687,8 +692,10 @@ def game_end_sequence_normal():
     
     if player_scores[0] > player_scores[1]:
         player_win_text = font.render("Player 1 Wins!", True, BLACK)
+        winner = player_1_character
     else: 
         player_win_text = font.render("Player 2 Wins!", True, BLACK)
+        winner = player_2_character
         
     screen.blit(player_win_text, (WINDOW_WIDTH // 2 - 75, WINDOW_HEIGHT // 2 + 100))
     
@@ -707,7 +714,7 @@ def flash_screen(player_idx):
 def picross_game():
     running = True
     while running:
-        screen.blit(pygame.image.load("source/art/bg_light.png"), (0, 0))
+        screen.blit(pygame.image.load("source/art/bg_light_v2.png"), (0, 0))
         current_time = pygame.time.get_ticks()
         
         # Draw everything
