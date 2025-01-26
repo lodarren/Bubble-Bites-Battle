@@ -123,7 +123,8 @@ while True:
         extend0.stop()
         extend0.play(loops=-1) 
         winner = picross.start_picross(characters[characters_chosen[0]], characters[characters_chosen[1]])
+        GAME_STATE = "END_SCREEN"
     elif GAME_STATE == "END_SCREEN":
         extend0.stop()
-        extend0.play()
-        endgame.end_screen(characters["2"])
+        #extend0.play()
+        endgame.end_screen(winner)
