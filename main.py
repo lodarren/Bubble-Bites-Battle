@@ -5,7 +5,9 @@ import characterselect
 # Initialize Pygame
 pygame.init()
 pygame.mixer.init(44100, -16, 2, 4096)
-pygame.mixer.music.load("music\start0.wav")
+start0 = pygame.mixer.Sound('music/start0.wav')
+extend0 = pygame.mixer.Sound('music/extend0.wav')
+extend0.set_volume(0.5)
 
 character_1 = {
     # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
@@ -63,13 +65,15 @@ GAME_STATE = "CHARACTER_SELECT"
 VOLUME = 1.0
 pygame.mixer.music.set_volume(VOLUME)
 
-while True:
+while True:    
     if GAME_STATE == "CHARACTER_SELECT":
-        pygame.mixer.music.play(-1,0,0)
+        extend0.play(loops=-1) 
         characters_chosen = characterselect.character_select_screen()
         GAME_STATE = 'PICROSS'
     elif GAME_STATE == "PICROSS":
-        pygame.mixer.music.play(-1,0,0)
-        picross.start_picross(characters_chosen[0], characters_chosen[1])
+        extend0.stop()
+        extend0.play(loops=-1) 
+        winner = picross.start_picross(characters_chosen[0], characters_chosen[1])
     elif GAME_STATE == "END_SCREEN":
+        extend0.play()
         pass

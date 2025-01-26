@@ -1,5 +1,6 @@
 import pygame
 import time
+import random
 
 # Initialize Pygame
 pygame.init()
@@ -29,6 +30,12 @@ text_font = pygame.font.SysFont(None, 50)
 image_paths = ["art/0_idle.png", "art/1_idle.png", "art/2_idle.png", "art/3_idle.png"]
 images_raw = [pygame.image.load(path) for path in image_paths]
 
+pop = pygame.mixer.Sound('music/pop.mp3')
+pop.set_volume(1.0)
+c_jump = pygame.mixer.Sound('music/c_jump.wav')
+c_downer = pygame.mixer.Sound('music/c_downer.wav')
+surprise = pygame.mixer.Sound('music/surprise.ogg')
+quick_surprise = pygame.mixer.Sound('music/quick_surprise.ogg')
 
 # Corresponds to player 1, player 2
 player_select_flags = [False, False]
@@ -171,7 +178,7 @@ def draw_words():
 ################################
 # Main function
 def character_select_screen():
-    global zooming, zoom_factor, zoom_start_time
+    global zooming, zoom_factor, zoom_start_time, player_index
     running = True
     while running:
         for event in pygame.event.get(): 
@@ -180,11 +187,21 @@ def character_select_screen():
                 running = False
             elif event.type == pygame.KEYDOWN and event.key in MOVEMENT_BUTTONS:
                 print(f"Key {pygame.key.name(event.key)} pressed")
+                if player_select_flags[0] and player_select_flags[1]:
+                    quick_surprise.play()
+                else:
+                    pop.play()
                 update_cursor_position(*MOVEMENT_BUTTONS[event.key])
             elif event.type == pygame.KEYDOWN and event.key in SELECT_BUTTONS:
+                rng = random.randint(1,10)
                 select_character(*SELECT_BUTTONS[event.key])
+                if rng != 4:
+                    c_downer.play()
+                else:
+                    surprise.play()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 if player_select_flags[0] and player_select_flags[1]:
+                    c_jump.play()
                     # Start zoom effect when Enter is pressed
                     zooming = True
                     zoom_start_time = time.time()  # Capture time when Enter is pressed
