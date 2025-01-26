@@ -253,13 +253,80 @@ def update_square_running(grid, position, mark):
         grid[position[1]][position[0]] = mark
         
     print(f'Placed {mark} at {position}')
+
+# Ultimate animation
+def ult_animation(player_idx, character_sprite):
+    character_image = pygame.image.load(character_sprite)
+    character_image = pygame.transform.scale(character_image, (1920, 1080))  # Resize if necessary
+    
+    if player_idx == 0:
+        character_rect = character_image.get_rect()
+        character_rect.topleft = (-960,0) 
+        
+        # Variables
+        fade_surface = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+        fade_surface.fill(BLACK)
+        fade_opacity = 0
+        fade_speed = 10  # Higher value fades faster
+        character_speed = 30
+
+        # TODO: Sound effect here
+        
+        # Fade to black
+        while fade_opacity < 255:
+            screen.fill(WHITE)
+            fade_surface.set_alpha(fade_opacity)
+            screen.blit(fade_surface, (0, 0))
+            fade_opacity += fade_speed
+            pygame.display.flip()
+
+        # Move character onto the screen
+        while character_rect.left < -480:
+            screen.fill(BLACK)
+            screen.blit(character_image, character_rect)
+            character_rect.x += character_speed
+            pygame.display.flip()
+
+    
+    else:
+        character_image = pygame.transform.flip(character_image, True, False) 
+        character_rect = character_image.get_rect()
+        character_rect.topleft = (WINDOW_WIDTH // 2 + 480 - 240, 0) 
+        
+        # Variables
+        fade_surface = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+        fade_surface.fill(BLACK)
+        fade_opacity = 0
+        fade_speed = 10  # Higher value fades faster
+        character_speed = -30
+
+        # TODO: Sound effect here
+        
+        # Fade to black
+        while fade_opacity < 255:
+            screen.fill(WHITE)
+            fade_surface.set_alpha(fade_opacity)
+            screen.blit(fade_surface, (0, 0))
+            fade_opacity += fade_speed
+            pygame.display.flip()
+
+        # Move character onto the screen
+        while character_rect.left > WINDOW_WIDTH // 2 - 480:
+            screen.fill(BLACK)
+            screen.blit(character_image, character_rect)
+            character_rect.x += character_speed
+            pygame.display.flip()
+        
+    # Pause for a moment
+    pygame.time.wait(100)
     
 # Ultimate attack
 def player_ult(character, player):
     global player_meters
     if player_meters[player] == 1: 
         print(f'PLAYER {player} SUPER')
-        player_meters[player] = 0
+        ult_animation(player, character['attack_sprite'])
+        #player_meters[player] = 0
     else: 
         print('failed')
 
@@ -363,7 +430,7 @@ def game_end_sequence_normal():
 def picross_game():
     running = True
     while running:
-        screen.fill(WHITE)
+        screen.blit(pygame.image.load("art/bg_light.png"), (0, 0))
         current_time = pygame.time.get_ticks()
 
         # Event handling

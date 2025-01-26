@@ -7,6 +7,45 @@ pygame.init()
 pygame.mixer.init(44100, -16, 2, 4096)
 pygame.mixer.music.load("music\start0.wav")
 
+character_1 = {
+    # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
+    'effect' : 0,
+    # between 1 and 0
+    'multiplier' : 0.75, 
+
+    'win_quote' : 'The was a nice try... Punk.',
+    'effect_description' : "Blow up the enemy's board!", 
+    'character_description' : 'The nomadic fiend', 
+
+    'neutral_sprite' : 'art/0_idle.png',
+    'hit_sprite' : 'art/0_hurt.png',
+    'attack_sprite' : 'art/2_attack.png', 
+    'bar_sprite' : 'art/border.png',
+    'progression_meter_sprite' : 'art/0_uncharged.png', 
+    'charged_meter_sprite' : 'art/0_charged.png', 
+
+    'colour_hexcodes' : '#fffce3'
+}
+
+character_2 = {
+    # 0 for bubble waffle,  1 for bubble chocolate, 2 for green bubble tea, 3 for bubble gum
+    'effect' : 0,
+    # between 1 and 0
+    'multiplier' : 0.75, 
+
+    'win_quote' : 'The was a nice try... Punk.',
+    'effect_description' : "Blow up the enemy's board!", 
+    'character_description' : 'The nomadic fiend', 
+
+    'neutral_sprite' : 'art/0_idle.png',
+    'hit_sprite' : 'art/0_hurt.png',
+    'attack_sprite' : "art/2_attack.png", 
+    'bar_sprite' : 'art/border.png',
+    'progression_meter_sprite' : 'art.0_uncharged.png', 
+    'charged_meter_sprite' : 'art/0_charged.png', 
+
+    'colour_hexcodes' : '#fffce3'
+}
 
 # Screen dimensions
 WINDOW_WIDTH, WINDOW_HEIGHT = 1920, 1080
@@ -19,7 +58,7 @@ pygame.display.set_caption("Picross")
 # - "CHARACTER_SELECT"
 # - "PICROSS"
 # - "END_SCREEN"
-GAME_STATE = "CHARACTER_SELECT"
+GAME_STATE = "PICROSS"
 
 VOLUME = 1.0
 pygame.mixer.music.set_volume(VOLUME)
@@ -30,6 +69,6 @@ while True:
         characterselect.character_select_screen()
     while GAME_STATE == "PICROSS":
         pygame.mixer.music.play(-1,0,0)
-        picross.picross_game()
+        picross.start_picross(character_1, character_2)
     while GAME_STATE == "END_SCREEN":
         pass
