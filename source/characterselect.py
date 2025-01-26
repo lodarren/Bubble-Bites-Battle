@@ -131,15 +131,15 @@ def draw_ready_to_battle():
 MOVEMENT_BUTTONS = {
     pygame.K_a : (0, -1),
     pygame.K_d : (0, 1),  
-    pygame.K_LEFT : (1, -1),
-    pygame.K_RIGHT : (1, 1), 
+    pygame.K_j : (1, -1),
+    pygame.K_l : (1, 1), 
 }
 
 SELECT_BUTTONS = {
-    pygame.K_g : (0, True),
-    pygame.K_h : (0, False),  
-    pygame.K_KP1 : (1, True),
-    pygame.K_KP2 : (1, False), 
+    pygame.K_f : (0, True),
+    pygame.K_g : (0, False),  
+    pygame.K_SEMICOLON : (1, True),
+    pygame.K_QUOTE : (1, False), 
 }
 
 def select_character(player_index, select_type):
