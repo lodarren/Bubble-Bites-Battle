@@ -6,8 +6,18 @@ pygame.init()
 # Screen dimensions
 WINDOW_WIDTH, WINDOW_HEIGHT = 1920, 1080
 
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GRAY = (200, 200, 200)
+BLUE = (0, 0, 255)
+ORANGE = (255,127,80)
+YELLOW = (255, 255, 0)
+RED = (255, 0, 0)
+
 # Initialize screen
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+clock = pygame.time.Clock()
 
 # Init Images
 bg = pygame.image.load('art/bg_character_select.png')
@@ -138,7 +148,6 @@ def character_select_screen():
                     running = False
                     print('DONE')
                     return player_select_flags
-
 
         draw_bg()
         slide(images_raw[player_cursors[0]], 'left')
