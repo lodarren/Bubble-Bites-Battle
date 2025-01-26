@@ -1,6 +1,4 @@
 import pygame
-import main
-import sys
 
 
 # Initialize Pygame
@@ -16,4 +14,5 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 image = pygame.image.load('test.png')
 
 def foo():
-    pygame.screen.blit(image, (0,0))
+    screen.blit(image, (0,0))
+    pygame.display.update()
