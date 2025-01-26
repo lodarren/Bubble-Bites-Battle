@@ -100,12 +100,12 @@ player_grids = [
                 [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)], 
                 [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
                 ]
-player_meters = [1, 1]
+
 player_scores = [0, 0]
 player_characters = [player_1_character, player_2_character]
 
 # 0 for player 1, 1 for player 2
-winner = 0
+winner = None
 
 # 0 := false, 1 := true
 sudden_death_flag = False
@@ -131,7 +131,6 @@ def draw_grid():
                 screen.blit(pygame.image.load('source/art/p12.png'), (x, y))
             
 
-            # Draw grid lines
             pygame.draw.rect(screen, BLACK, (x, y, CELL_SIZE, CELL_SIZE), 2)
     
         for row in range(GRID_SIZE):
@@ -170,7 +169,6 @@ def draw_clues():
             # Render each number as text
             text = font.render(str(number), True, BLACK)
             
-            # Draw each number at a different Y position (vertically)
             screen.blit(text, (col_idx * CELL_SIZE + GRID1_OFFSET[0] + CELL_SIZE // 2, GRID1_OFFSET[1] - CELL_SIZE * 1.25  + i * CELL_SIZE / len(clue)))
             
     # Draw row clues for grid 2
@@ -193,31 +191,34 @@ def draw_clues():
             screen.blit(text, (col_idx * CELL_SIZE + GRID2_OFFSET[0] + CELL_SIZE // 2, GRID2_OFFSET[1] - CELL_SIZE * 1.25  + i * CELL_SIZE / len(clue)))
 
 
+player_meters = [0, 0]
 def draw_meter(): 
     # Load the progression meter sprites
     
-    # THis is too hard to code, i need just the rectangle
     bar_meter_1 = pygame.image.load(player_1_character['progression_meter_sprite'])
     bar_meter_2 = pygame.image.load(player_2_character['progression_meter_sprite'])
-
-    # Player 1 progression meter scaling and display
-    if player_meters[0] < 1:
-        # Scale the bar based on the player's progression meter
-        scaled_bar_1 = pygame.transform.scale(bar_meter_1, (player_meters[0] * WINDOW_WIDTH // 2, 3 * CELL_SIZE))
-        screen.blit(scaled_bar_1, (METER1_OFFSET[0], METER1_OFFSET[1]))
-    else:
-        # Player 1 has full meter, use the charged sprite
-        screen.blit(pygame.image.load(player_1_character['charged_meter_sprite']), (METER1_OFFSET[0], METER1_OFFSET[1]))
+    charged_bar_meter_1 = pygame.image.load(player_1_character['charged_meter_sprite'])
+    charged_bar_meter_2 = pygame.image.load(player_2_character['charged_meter_sprite'])
     
-    # Player 2 progression meter scaling and display
-    if player_meters[1] < 1:
-        # Scale the bar based on the player's progression meter
-        scaled_bar_2 = pygame.transform.scale(bar_meter_2, (player_meters[1] * WINDOW_WIDTH // 2, 3 * CELL_SIZE))
-        screen.blit(scaled_bar_2, (METER2_OFFSET[0] + (WINDOW_WIDTH // 2 * (1 - player_meters[1])), METER2_OFFSET[1]))
-    else:
-        # Player 2 has full meter, use the charged sprite
-        screen.blit(pygame.image.load(player_2_character['charged_meter_sprite']), (METER2_OFFSET[0], METER2_OFFSET[1]))
+    bar_meter_2 = pygame.transform.flip(bar_meter_2, True, False)
+    charged_bar_meter_2 = pygame.transform.flip(charged_bar_meter_2, True, False)
 
+    if player_meters[0] < 1:
+        scaled_bar_1 = pygame.transform.scale(bar_meter_1, (player_meters[0] * 9.5 * CELL_SIZE,  CELL_SIZE))
+        screen.blit(scaled_bar_1, (CELL_SIZE * 3, METER1_OFFSET[1] + 110))
+    else:
+        scaled_charged_bar_1 =  pygame.transform.scale(charged_bar_meter_1, (player_meters[0] * 9.5 * CELL_SIZE,  CELL_SIZE))
+        screen.blit(scaled_charged_bar_1, (CELL_SIZE * 3, METER1_OFFSET[1] + 110))
+    
+    
+    if player_meters[1] < 1:
+        scaled_bar_2 = pygame.transform.scale(bar_meter_2,  (player_meters[1] * 9.5 * CELL_SIZE,  CELL_SIZE))
+        screen.blit(scaled_bar_2, (METER2_OFFSET[0] + ((1 - player_meters[1]) * 9.5 * CELL_SIZE) + 20, METER2_OFFSET[1] + 110))
+    else:
+        scaled_charged_bar_2 = pygame.transform.scale(charged_bar_meter_2,  (9.5 * CELL_SIZE,  CELL_SIZE))
+        screen.blit(scaled_charged_bar_2, (METER2_OFFSET[0] + 20, METER2_OFFSET[1] + 110))
+
+    # Character renders
     character_1_img = pygame.image.load(player_1_character['neutral_sprite'])
     character_2_img = pygame.image.load(player_2_character['neutral_sprite'])
 
@@ -233,10 +234,6 @@ def draw_meter():
     screen.blit(character_1_img, (- CELL_SIZE, METER1_OFFSET[1]))
     screen.blit(character_2_img, (WINDOW_WIDTH - 4 *  CELL_SIZE, METER2_OFFSET[1]))
     
-    '''
-    pygame.draw.rect(screen, RED, pygame.Rect(METER1_OFFSET[0], METER1_OFFSET[1], WINDOW_WIDTH // 2 * player_meters[0], 3 * CELL_SIZE))
-    pygame.draw.rect(screen, BLUE, pygame.Rect(METER2_OFFSET[0] + (WINDOW_WIDTH // 2 * (1 - player_meters[1])), METER2_OFFSET[1], WINDOW_WIDTH // 2 * player_meters[1], 3 * CELL_SIZE))
-    '''
 
 
 def draw_score():
@@ -246,8 +243,8 @@ def draw_score():
     screen.blit(score_2_text, SCORE2_OFFSET)
 
 
+# Get the clue numbers for a row or column.
 def get_clue(line):
-    """Get the clue numbers for a row or column."""
     clue = []
     count = 0
     for cell in line:
@@ -260,10 +257,8 @@ def get_clue(line):
         clue.append(count)
     return clue if clue else [0]
 
-
+#Check if the player has completed the puzzle correctly.
 def check_win(player_grid, solution_grid):
-    """Check if the player has completed the puzzle correctly."""
-    
     for c in range(GRID_SIZE):
         for r in range(GRID_SIZE):
             if solution_grid[r][c] == 1 and player_grid[r][c] != 1:
@@ -281,12 +276,10 @@ def update_cursor_position(axis, value, player):
         player_positions[player][axis] = 0
     elif player_positions[player][axis] < 0:
         player_positions[player][axis] = GRID_SIZE - 1
-
-    #print(player_positions[player])
         
 bubble_animations = {}  # Stores ongoing bubble animations by (x, y)
 pin_animations = {}  # Stores ongoing pin animations by (x, y)
-soap_animations = {}
+soap_animations = {} # Stores ongoing soap animations
 
 def spawn_bubble(x, y, grid_idx):
     gridoffset = (0, 0)
@@ -342,45 +335,45 @@ def update_animations():
     # Update bubble animations
     for (x, y), animation in list(bubble_animations.items()):
         current_time = pygame.time.get_ticks()
-        if current_time - animation['last_update_time'] >= 100:  # Update every 100ms
+        if current_time - animation['last_update_time'] >= 100:  
             screen.blit(pygame.image.load(f'source/art/b{int(animation["idx"])}.png'), (x, y))
             pygame.display.update()
-            animation['last_update_time'] = current_time  # Update time
+            animation['last_update_time'] = current_time 
             if animation['despawning']:
                 animation['idx'] -= 2
                 if animation['idx'] <= 0:
-                    del bubble_animations[(x, y)]  # Remove animation when finished
+                    del bubble_animations[(x, y)] 
             else:
                 animation['idx'] += 2
                 if animation['idx'] >= 8:
-                    del bubble_animations[(x, y)]  # Remove animation when finished
+                    del bubble_animations[(x, y)] 
 
     # Update pin animations
     for (x, y), animation in list(pin_animations.items()):
         current_time = pygame.time.get_ticks()
-        if current_time - animation['last_update_time'] >= 100:  # Update every 100ms
+        if current_time - animation['last_update_time'] >= 100:  
             screen.blit(pygame.image.load(f'source/art/p{int(animation["idx"])}.png'), (x, y))
             pygame.display.update()
-            animation['last_update_time'] = current_time  # Update time
+            animation['last_update_time'] = current_time  
             if animation['despawning']:
                 animation['idx'] -= 2
                 if animation['idx'] <= 0:
-                    del pin_animations[(x, y)]  # Remove animation when finished
+                    del pin_animations[(x, y)]  
             else:
                 animation['idx'] += 2
                 if animation['idx'] >= 12:
-                    del pin_animations[(x, y)]  # Remove animation when finished
+                    del pin_animations[(x, y)]  
     
     # Update soap animations
     for (x, y), animation in list(pin_animations.items()):
         current_time = pygame.time.get_ticks()
-        if current_time - animation['last_update_time'] >= 100:  # Update every 100ms
+        if current_time - animation['last_update_time'] >= 100:  
             screen.blit(pygame.image.load(f'source/art/s{int(animation["idx"])}.png'), (x, y))
             pygame.display.update()
-            animation['last_update_time'] = current_time  # Update time
+            animation['last_update_time'] = current_time  
             animation['idx'] += 2
             if animation['idx'] >= 10:
-                del pin_animations[(x, y)]  # Remove animation when finished
+                del pin_animations[(x, y)]  
 
 
 # Updates grid[r][c] with the specified mark        
@@ -464,7 +457,7 @@ def update_square_running(grid_idx, position, mark):
 def ult_animation(player_idx, character_sprite):
     crit.play()
     character_image = pygame.image.load(character_sprite)
-    character_image = pygame.transform.scale(character_image, (1920, 1080))  # Resize if necessary
+    character_image = pygame.transform.scale(character_image, (1920, 1080)) 
     
     character_1_img = pygame.image.load(player_1_character['hit_sprite'])
     character_2_img = pygame.image.load(player_2_character['hit_sprite'])
@@ -483,14 +476,10 @@ def ult_animation(player_idx, character_sprite):
         fade_surface = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         fade_surface.fill(BLACK)
         fade_opacity = 0
-        fade_speed = 10  # Higher value fades faster
+        fade_speed = 10  
         character_speed = 30
 
-        # TODO: Sound effect here
-        
 
-        
-        # Fade to black
         while fade_opacity < 255:
             #screen.fill(WHITE)
             fade_surface.set_alpha(fade_opacity)
@@ -516,11 +505,9 @@ def ult_animation(player_idx, character_sprite):
         fade_surface = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         fade_surface.fill(BLACK)
         fade_opacity = 0
-        fade_speed = 5  # Higher value fades faster
+        fade_speed = 5  
         character_speed = -30
 
-        # TODO: Sound effect here
-        
         # Fade to black
         while fade_opacity < 50:
             screen.fill(WHITE)
@@ -543,7 +530,6 @@ def ult_animation(player_idx, character_sprite):
     pygame.time.wait(100)
     
 def destroy_grid(player):
-    # TODO PUT EFFECTS
     bomb.play()
     player_grids[player] = [[2 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
     
@@ -551,11 +537,9 @@ def destroy_grid(player):
 def random_powerup(player): 
     global player_scores
     charge.play()
-    # Define the possible values and their corresponding probabilities
     values = [-2, -1, 1, 2]
     probabilities = [0.05, 0.4, 0.4, 0.15]
 
-    # Get a random value based on the probabilities
     player_scores[player] += random.choices(values, probabilities)[0]
     
     
@@ -585,7 +569,6 @@ def reveal_grid(player):
 
 def swap_puzzles():
     debuff.play()
-    # play swap sound effect
     global solution_grid_1, solution_grid_2
     temp = solution_grid_1
     solution_grid_1 = solution_grid_2
@@ -806,25 +789,24 @@ def picross_game():
         if check_win(player_grids[0], solution_grid_1) and not player_1_win_flag:
             player_1_win_flag = True
             update_scores(0)
-            flash_screen(0)
+            #flash_screen(0)
             restart_puzzle(0)
-            #print(player_grids[0])
             player_1_win_flag = False
         elif check_win(player_grids[1], solution_grid_2) and not player_2_win_flag:
             player_2_win_flag = True
             update_scores(1)
-            flash_screen(1)
+            #flash_screen(1)
             restart_puzzle(1)
             player_2_win_flag = False
             
 
         # Calculate the remaining time
-        elapsed_time = (pygame.time.get_ticks() - start_ticks) // 1000  # Convert ms to seconds
-        remaining_time = max(TIMER_DURATION - elapsed_time, 0)  # Countdown timer
+        elapsed_time = (pygame.time.get_ticks() - start_ticks) // 1000  
+        remaining_time = max(TIMER_DURATION - elapsed_time, 0) 
         
         timer_text = timer_font.render(f"{remaining_time}", True, BLACK)
         text_width, _ = timer_text.get_size()
-        screen.blit(timer_text, ((WINDOW_WIDTH - text_width)//2, 50))  # Display at top-right corner
+        screen.blit(timer_text, ((WINDOW_WIDTH - text_width)//2, 50)) 
 
         
         # Check if the timer runs out
@@ -851,25 +833,3 @@ def start_picross(character_1, character_2):
     player_2_character = character_2
 
     picross_game()
-    
-    return #This is the character that wins
-    
-
-#start_picross(None, None)
-
-
-#pygame.quit()
-#sys.exit()
-
-
-# CLOCK DONE
-# Add score DONE
-# Super animation when add/destroy
-# meter scores DONE
-# add sprites 
-# add 7x7 picross puzzles DONE
-
-
-# TODO Get the supers/ADD/Destroy
-# TODO Get the game to for loop to get multiple games
-# TODO TIMER
