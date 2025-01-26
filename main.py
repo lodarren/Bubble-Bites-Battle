@@ -4,6 +4,8 @@ import characterselect
 
 # Initialize Pygame
 pygame.init()
+pygame.mixer.init(44100, -16, 2, 4096)
+pygame.mixer.music.load("music\start0.wav")
 
 
 # Screen dimensions
@@ -19,10 +21,15 @@ pygame.display.set_caption("Picross")
 # - "END_SCREEN"
 GAME_STATE = "CHARACTER_SELECT"
 
+VOLUME = 1.0
+pygame.mixer.music.set_volume(VOLUME)
+
 while True:
     while GAME_STATE == "CHARACTER_SELECT":
-        characterselect.foo()
+        pygame.mixer.music.play(-1,0,0)
+        characterselect.character_select_screen()
     while GAME_STATE == "PICROSS":
+        pygame.mixer.music.play(-1,0,0)
         picross.picross_game()
     while GAME_STATE == "END_SCREEN":
         pass
