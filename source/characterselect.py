@@ -20,6 +20,7 @@ RED = (255, 0, 0)
 # Initialize screen
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 clock = pygame.time.Clock()
+clock.tick(120)
 
 # Init Images
 bg = pygame.image.load('source/art/bg_character_select.png')

@@ -59,11 +59,7 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Picross")
 
 # Timer settings
-<<<<<<< HEAD
-TIMER_DURATION = 300 #80  # Countdown duration in seconds
-=======
 TIMER_DURATION = 300  # Countdown duration in seconds
->>>>>>> c08586c6c2a33a6fcab16eb224f5b657f2daf914
 start_ticks = pygame.time.get_ticks()  # Record the start time
 
 # Example solution grid (1 for filled, 0 for empty)
@@ -432,10 +428,7 @@ def update_square_running(grid_idx, position, mark):
         pass 
         
     elif grid[position[1]][position[0]] == 2 and mark == 2:
-        # pin despawn 
-        gone.play()
-        despawn_pin(position[0], position[1], grid_idx)
-        grid[position[1]][position[0]] = 0
+        pass
         
     #print(f'Placed {mark} at {position}')
 
@@ -581,7 +574,7 @@ def player_ult(character, player):
         #print(f'PLAYER {player} SUPER')
         ult_animation(player, character['attack_sprite'])
         ult_effect(player, character['effect'])
-        #player_meters[player] = 0
+        player_meters[player] = 0
     else: 
         #print('failed')
         pass
@@ -637,10 +630,10 @@ def update_scores(player):
     global player_scores, player_meters
     if player == 0:
         player_scores[0] += 1
-        player_meters[1] += 0.5 * player_1_character['multiplier']
+        player_meters[1] += 0.5 
     elif player == 1: 
         player_scores[1] += 1
-        player_meters[0] += 0.5 * player_2_character['multiplier']
+        player_meters[0] += 0.5 
     
     if player_meters[0] > 1: 
         player_meters[0] = 1
@@ -727,7 +720,7 @@ def picross_game():
                     key_states_movement[event.key] = current_time
                     last_action_time_movement[event.key] = 0
                     #print(f"Key {pygame.key.name(event.key)} pressed")
-                    #update_cursor_position(*MOVEMENT_BUTTONS[event.key])
+                    update_cursor_position(*MOVEMENT_BUTTONS[event.key])
                     
                     for placement_key in PLACEMENT_BUTTONS:
                         if pressed_keys[placement_key]:
@@ -759,16 +752,20 @@ def picross_game():
         for key, press_time in list(key_states_movement.items()):
             elapsed = current_time - press_time
             pressed_keys = pygame.key.get_pressed()
+            
+            
             for placement_key in PLACEMENT_BUTTONS:
                 if pressed_keys[placement_key]:
                     update_square_running(PLACEMENT_BUTTONS[placement_key][0], player_positions[PLACEMENT_BUTTONS[placement_key][0]], PLACEMENT_BUTTONS[placement_key][1])
             
+            '''
             if elapsed >= DAS_DELAY:
                 time_since_last_action = current_time - last_action_time_movement[key]
                 if time_since_last_action >= DAS_INTERVAL:
                     #print(f"Action triggered for key: {pygame.key.name(key)}")
                     update_cursor_position(*MOVEMENT_BUTTONS[key])
-                    last_action_time_movement[key] = current_time 
+                    last_action_time_movement[key] = current_time
+            ''' 
         
 
         # Check win condition
