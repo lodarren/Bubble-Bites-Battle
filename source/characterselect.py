@@ -52,15 +52,15 @@ start_y = (WINDOW_HEIGHT - TILE_HEIGHT) // 4 * 3
 # Box dimensions (Rightside)
 box_width = 860
 box_height = 200
-box_x = WINDOW_WIDTH - box_width - 20  # 20px padding from the right
-box_y = WINDOW_HEIGHT - box_height - 20 # 20px padding from the bottom
-rect_surface = pygame.Surface((box_width, box_height), pygame.SRCALPHA)  # Surface with alpha
-rect_surface.fill((0, 0, 0, 0))  # Clear the surface (fully transparent)
+box_x = WINDOW_WIDTH - box_width - 20  
+box_y = WINDOW_HEIGHT - box_height - 20 
+rect_surface = pygame.Surface((box_width, box_height), pygame.SRCALPHA)  
+rect_surface.fill((0, 0, 0, 0))  
 
 
 # Rox dimensions (Leftside Box)
-rox_x = 20  # 20px padding from the right
-rox_y = WINDOW_HEIGHT - box_height - 20 # 20px padding from the bottom
+rox_x = 20  
+rox_y = WINDOW_HEIGHT - box_height - 20 
 
 # Possible Texts
 des = {
@@ -112,7 +112,7 @@ def draw_tiles():
         pygame.draw.rect(screen, WHITE, (x, start_y, TILE_WIDTH, TILE_HEIGHT))
         screen.blit(img, (x, start_y))
         
-        x += TILE_WIDTH + 10  # Move to the right, with spacing
+        x += TILE_WIDTH + 10  
     if type(player_select_flags[0]) == bool:
         pygame.draw.rect(screen, RED, (start_x + player_cursors[0] * TILE_WIDTH + 10 * player_cursors[0], start_y, TILE_WIDTH, TILE_HEIGHT), 5)
     else: 
@@ -147,10 +147,10 @@ def select_character(player_index, select_type):
     global player_select_flags
     if select_type:
         player_select_flags[player_index] = str(player_cursors[player_index])
-        print(f"PLAYER {player_index} SELECTED {player_cursors[player_index]}")
+        #print(f"PLAYER {player_index} SELECTED {player_cursors[player_index]}")
     else:
         player_select_flags[player_index] = False
-        print(f"PLAYER {player_index} UNSELECTED {player_cursors[player_index]}")
+        #print(f"PLAYER {player_index} UNSELECTED {player_cursors[player_index]}")
         
 
 ################################
@@ -161,7 +161,7 @@ def draw_descriptions():
 
 def draw_words():
     lines = des[player_cursors[1]].splitlines()
-    line_height = text_font.get_linesize()  # Get the height of each line
+    line_height = text_font.get_linesize()  
     for i, line in enumerate(lines):
         # Render each line
         text_surface = text_font.render(line, True, BLACK)
@@ -169,7 +169,7 @@ def draw_words():
         screen.blit(text_surface, text_rect)
 
     lines_2 = des[player_cursors[0]].splitlines()
-    line_height = text_font.get_linesize()  # Get the height of each line
+    line_height = text_font.get_linesize()  
     for i, line in enumerate(lines_2):
         # Render each line
         text_surface_2 = text_font.render(line, True, BLACK)
@@ -187,7 +187,7 @@ def character_select_screen():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key in MOVEMENT_BUTTONS:
-                print(f"Key {pygame.key.name(event.key)} pressed")
+                #print(f"Key {pygame.key.name(event.key)} pressed")
                 if player_select_flags[0] and player_select_flags[1]:
                     quick_surprise.play()
                 else:
@@ -205,7 +205,7 @@ def character_select_screen():
                     c_jump.play()
                     # Start zoom effect when Enter is pressed
                     zooming = True
-                    zoom_start_time = time.time()  # Capture time when Enter is pressed
+                    zoom_start_time = time.time()  
                     
         
         if zooming:
@@ -213,10 +213,10 @@ def character_select_screen():
             if elapsed_time < zoom_duration:
                 zoom_factor = 1 + (elapsed_time / zoom_duration)  # Gradually zoom in
             else:
-                zoom_factor = 2  # Max zoom after 1.5 seconds
-                zooming = False  # Stop zooming after the effect is finished
+                zoom_factor = 2 
+                zooming = False 
                 running = False
-                print('DONE')
+                #print('DONE')
                 return player_select_flags, pygame.time.get_ticks()
 
         if zooming:
@@ -230,9 +230,3 @@ def character_select_screen():
             draw_ready_to_battle()
 
         pygame.display.update()
-
-# Helper to take inputs of keys  DONE
-# Helper to blit character icons/grids DONE
-# Helper to slide selected characters onto screen DONE
-# TODO Helper to show flavor text
-# TODO Helper to show ability text

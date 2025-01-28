@@ -84,6 +84,7 @@ player_grids = [
                 ]
 
 player_scores = [0, 0]
+player_meters = [0, 0]
 player_characters = [player_1_character, player_2_character]
 
 # 0 for player 1, 1 for player 2
@@ -173,7 +174,6 @@ def draw_clues():
             screen.blit(text, (col_idx * CELL_SIZE + GRID2_OFFSET[0] + CELL_SIZE // 2, GRID2_OFFSET[1] - CELL_SIZE * 1.25  + i * CELL_SIZE / len(clue)))
 
 
-player_meters = [0, 0]
 def draw_meter(): 
     # Load the progression meter sprites
     
